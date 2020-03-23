@@ -1,5 +1,4 @@
-# @PROJECT_NAME@
-@PROJECT_DESCRIPTION@
+# Effective Brocolli
 
 ## Build
 ```shell

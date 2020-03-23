@@ -23,7 +23,7 @@ set (
   include/Entity.hpp
 )
 
-add_executable(${PROJECT_NAME} ${HEADERS} src/main.cpp)
+add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES} src/main.cpp)
 
 set(BUILD_TESTS OFF CACHE BOOL "Build tests")
 if (BUILD_TESTS)
