@@ -16,12 +16,14 @@ include_directories("include")
 
 set (
   SOURCES
-  src/Entity.cpp
-)
+        src/Entity.cpp
+        src/PhysicalComponent.cpp
+        src/QuadTree.cpp
+        )
 set (
   HEADERS
   include/Entity.hpp
-)
+        include/PhysicalComponent.hpp include/PhysicalSystem.hpp include/QuadTree.hpp)
 
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES} src/main.cpp)
 
@@ -42,7 +44,10 @@ include_directories(${gtest_SOURCE_DIR})
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 set(UNIT_TESTS_NAME "run-tests-${PROJECT_NAME}")
-set(UNIT_TESTS_FILE "test/test.cpp")
+set(UNIT_TESTS_FILE
+        "test/test.cpp"
+        "test/QuadTreeTest.cpp"
+)
 
 add_executable(${UNIT_TESTS_NAME} ${UNIT_TESTS_FILE})
 
