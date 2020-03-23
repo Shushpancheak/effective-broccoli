@@ -7,19 +7,23 @@ if(MSVC)
 endif()
 
 project (
-  "PROJECT_NAME"
+  "effective-brocolli"
   VERSION 1.0.0
   DESCRIPTION ""
 )
+
+include_directories("include")
+
 set (
   SOURCES
-  src/${PROJECT_NAME}.cpp
+  src/Entity.cpp
 )
 set (
-  PUBLIC_HEADERS
-  include/${PROJECT_NAME}.hpp
+  HEADERS
+  include/Entity.hpp
 )
 
+add_executable(${PROJECT_NAME} ${HEADERS} src/main.cpp)
 
 set(BUILD_TESTS OFF CACHE BOOL "Build tests")
 if (BUILD_TESTS)
@@ -54,3 +58,35 @@ endif() # BUILD_TESTS
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - DEPENDENCIES- - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+add_subdirectory(submodules)
+
+# - - - - - - - - - - - - - - - - -SFML - - - - - - - - - - - - - - - - - - - -
+
+# Chose a way to find the SFML.
+if (MSVC) # WINDOWS
+
+target_link_libraries(
+  ${PROJECT_NAME}
+  sfml-graphics
+  sfml-audio
+  sfml-system
+)
+
+## If you want to link SFML statically
+set(SFML_STATIC_LIBRARIES TRUE)
+
+## In most cases better set in the CMake cache
+set(SFML_DIR "submodules/sfml-compiled/lib/cmake/SFML")
+
+include_directories(submodules/sfml-compiled/include)
+
+else() # LINUX
+
+target_link_libraries(
+${PROJECT_NAME} sfml-graphics sfml-audio sfml-system
+)
+
+endif() # SFML
+
+find_package(SFML 2.5 COMPONENTS graphics audio system REQUIRED)
