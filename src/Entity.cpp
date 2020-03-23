@@ -1,5 +1,7 @@
 #include "Entity.hpp"
 
+size_t Entity::current_id_ = 0;
+
 Entity::Entity()
   : id_(current_id_++)
   , in_use_(true) {}

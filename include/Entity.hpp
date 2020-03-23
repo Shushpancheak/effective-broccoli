@@ -2,6 +2,10 @@
 #define BROCOLLI_ENTITY
 #include <vector>
 
+#ifndef WIN32
+#include <cstddef>
+#endif
+
 class Entity {
 public:
   Entity();
