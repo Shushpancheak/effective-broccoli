@@ -44,10 +44,8 @@ add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES} src/main.cpp)
 set(BUILD_TESTS OFF CACHE BOOL "Build tests")
 if (BUILD_TESTS)
 
-if (MSVC)
 add_subdirectory(submodules/googletest)
 include_directories(submodules/googletest/googletest/include)
-endif ()
 
 enable_testing()
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
