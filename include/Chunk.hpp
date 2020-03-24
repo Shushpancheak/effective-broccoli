@@ -3,13 +3,18 @@
 
 #include <utility>
 #include <cassert>
+#include "support/IntrusiveList.hpp"
 
 namespace objects {
 
 enum ChunkErrorCodes {
+  NO_ERROR,
   FALSE_TYPE,
   CTOR_FAILED,
-  BAD_PTR
+  BAD_PTR,
+  ALREADY_DELETED,
+  OUT_OF_BOUNDS,
+  OBJECT_NOT_PRESENT
 };
 
 using TypeID = size_t;
@@ -19,12 +24,12 @@ using TypeID = size_t;
  * Use Add and Delete to manage objects.
  *
  * The type of items stored must have a static type ID
- * in field of type size_t named type_id.
+ * given in static method GetTypeID().
  *
  * The type stored also has to be at least one word long.
  */
 template<size_t ObjectsInChunk = 10>
-class Chunk {
+class Chunk : public IntrusiveNode<Chunk<ObjectsInChunk>> {
 public:
   explicit Chunk(const size_t object_size, const TypeID type_id);
   ~Chunk();
@@ -49,6 +54,46 @@ public:
   int Delete(T* item_ptr);
 
   /**
+   * Deletes count objects of type T, starting from item_ptr, using T's destructor.
+   */
+  template<typename T>
+  int Delete(T* item_ptr, size_t count);
+
+  /**
+   * Deletes the object pointed to by item_ptr, using T's destructor,
+   * if an object does actually occupy this position.
+   *
+   * @return ALREADY_DELETED if the address is not occupied.
+   */
+  template<typename T>
+  int DeleteIfPresent(T* item_ptr);
+
+  /**
+   * Deletes objects starting from item_ptr, using T's destructor,
+   * if an object does actually occupy this position.
+   *
+   * @return ALREADY_DELETED if the address is not occupied.
+   */
+  template<typename T>
+  int DeleteIfPresent(T* item_ptr, size_t count);
+
+  /**
+   * Deletes all objects in chunk, skipping uninitialized components,
+   * thus clearing all chunk.
+   */
+  template<typename T>
+  void DeleteAll();
+
+  /**
+   * @return NO_ERROR if item pointed to by item_ptr is present in chunk.
+   * Error codes:
+   * OUT_OF_BOUNDS      - Pointer is out of bounds of chunk.
+   * OBJECT_NOT_PRESENT - There is no object in address.
+   */
+  template<typename T>
+  int GetPresentStatus(T* item_ptr);
+
+  /**
    * @return does chunk has no objects.
    */
   bool IsEmpty() const;
@@ -63,12 +108,17 @@ public:
    */
   size_t Size() const;
 
+  /**
+   * @return static type id of object type held in chunk.
+   */
+  TypeID GetTypeID() const;
+
 private:
   /**
    * Construct the item of type T with args.
    *
    * @return error codes:
-   * FALSE_TYPE  - type T does not correspond to the static type_id given.
+   * FALSE_TYPE  - type T does not correspond to the static GetTypeID given.
    * CTOR_FAILED - constructor of type T with args failed.
    * BAD_PTR     - item_addr is nullptr.
    */
@@ -155,7 +205,67 @@ int Chunk<ObjectsInChunk>::Delete(T* item_ptr) {
 
   --size_;
 
-  return 0;
+  return NO_ERROR;
+}
+
+template<size_t ObjectsInChunk>
+template<typename T>
+void Chunk<ObjectsInChunk>::DeleteAll() {
+  for (size_t i = 0; i < ObjectsInChunk; ++i) {
+    DeleteIfPresent(buffer_ + i);
+  }
+}
+
+template<size_t ObjectsInChunk>
+template<typename T>
+int Chunk<ObjectsInChunk>::GetPresentStatus(T* item_ptr) {
+  if (item_ptr < buffer_ || item_ptr > buffer_ + ObjectsInChunk * object_size_) {
+    return OUT_OF_BOUNDS;
+  }
+
+  if (IsAvailable(item_ptr)) {
+    return OBJECT_NOT_PRESENT;
+  } else {
+    return NO_ERROR;
+  }
+}
+
+template<size_t ObjectsInChunk>
+template<typename T>
+int Chunk<ObjectsInChunk>::Delete(T* item_ptr, size_t count) {
+  for (size_t i = 0; i < count; ++i) {
+    const int res = Delete(item_ptr + i);
+
+    if (res != NO_ERROR) {
+      return res;
+    }
+  }
+
+  return NO_ERROR;
+}
+
+template<size_t ObjectsInChunk>
+template<typename T>
+int Chunk<ObjectsInChunk>::DeleteIfPresent(T* item_ptr) {
+  if (IsAvailable(item_ptr)) {
+    return ALREADY_DELETED;
+  }
+
+  return Delete(item_ptr);
+}
+
+template<size_t ObjectsInChunk>
+template<typename T>
+int Chunk<ObjectsInChunk>::DeleteIfPresent(T* item_ptr, size_t count) {
+  for (size_t i = 0; i < count; ++i) {
+    const int res = DeleteIfPresent(item_ptr + i);
+
+    if (res != NO_ERROR) {
+      return res;
+    }
+  }
+
+  return NO_ERROR;
 }
 
 template<size_t ObjectsInChunk>
@@ -173,6 +283,11 @@ size_t Chunk<ObjectsInChunk>::Size() const {
   return size_;
 }
 
+template<size_t ObjectsInChunk>
+TypeID Chunk<ObjectsInChunk>::GetTypeID() const {
+  return type_id_;
+}
+
 // - - - - - - - - - - - - - - - - PRIVATES - - - - - - - - - - - - - - - - - -
 
 template<size_t ObjectsInChunk>
@@ -181,7 +296,7 @@ int Chunk<ObjectsInChunk>::Construct(void* item_addr, Args&&... args) {
   assert(item_addr >= buffer_ &&
          item_addr <= buffer_ + ObjectsInChunk * object_size_);
 
-  if (T::type_id != type_id_) {
+  if (T::GetTypeID() != type_id_) {
     return FALSE_TYPE;
   }
 
