@@ -5,65 +5,59 @@
 #include <utility>
 #include "Component.hpp"
 #include "ObjectPool.hpp"
-
-using entityID_t = size_t;
-using componentID_t = size_t;
-using ComponentPtr = void*;
-
-enum ComponentManagerErrorCodes {
-  NO_ERROR,
-  NOT_EXIST,
-  ALLOC_FAULT
-};
+#include "constants/error_codes.hpp"
+#include "support/typedefs.hpp"
 
 class ComponentManager {
+  using ComponentPtr = void*;
+
 public:
   /**
-   * @return component pointer if component exists, nullptr otherwise
-   * **/
+   * @return component pointer if component exists, nullptr otherwise.
+   */
   template<typename T>
-  T* GetComponent(entityID_t entity_id);
+  T* GetComponent(EntityID entity_id);
 
   /**
-   * @return ALLOC_FAULT if object pool is full
-   * **/
+   * @return ALLOC_FAILED if object pool is full.
+   */
   template<typename T, typename ...Args>
-  int AddComponent(entityID_t entity_id, Args&&... args);
+  int AddComponent(EntityID entity_id, Args&&... args);
 
-    /**
-   * @return NOT_EXIST if value does not exist
-   * **/
+  /**
+  * @return NOT_FOUND if value does not exist.
+  */
   template<typename T>
-  int DeleteComponent(entityID_t entity_id);
+  int DeleteComponent(EntityID entity_id);
 
-  int DeleteAllComponents(entityID_t entity_id);
+  int DeleteAllComponents(EntityID entity_id);
 private:
-  ObjectPool component_pool_; // T& pool.CreateObject<T>(), pool.Delete()
-  std::unordered_map<entityID_t , std::unordered_map<componentID_t, ComponentPtr>> map_;
+  ObjectPool<> component_pool_;
+  std::unordered_map<EntityID, std::unordered_map<ComponentID, ComponentPtr>> map_;
 };
 
 template<typename T, typename ...Args>
-int ComponentManager::AddComponent(entityID_t entity_id, Args&&... args) {
+int ComponentManager::AddComponent(const EntityID entity_id, Args&&... args) {
   T* ptr = component_pool_.CreateObject<T>(std::forward(args)...);
   if (!ptr) {
-    return ALLOC_FAULT;
+    return ALLOC_FAILED;
   }
   map_[entity_id][T::GetTypeID()] = ptr;
   return NO_ERROR;
 }
 
 template<typename T>
-int ComponentManager::DeleteComponent(entityID_t entity_id) {
+int ComponentManager::DeleteComponent(EntityID entity_id) {
   if (map_[entity_id].count(T::GetTypeID()) == 0) {
-    return NOT_EXIST;
+    return NOT_FOUND;
   }
-  component_pool_.Delete(map_[entity_id][T::GetTypeID()] );
+  component_pool_.DeleteObject<T>(map_[entity_id][T::GetTypeID()] );
   map_[entity_id].erase(T::GetTypeID());
   return NO_ERROR;
 }
 
 template<typename T>
-T *ComponentManager::GetComponent(entityID_t entity_id) {
+T *ComponentManager::GetComponent(EntityID entity_id) {
   if (map_[entity_id].count(T::GetTypeID()) == 0) {
     return nullptr;
   }

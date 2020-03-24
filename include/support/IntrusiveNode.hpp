@@ -35,7 +35,7 @@ private:
 
 template<typename T>
 bool IntrusiveNode<T>::IsLinked() const noexcept {
-  return next != nullptr;
+  return next_ != nullptr;
 }
 
 template<typename T>

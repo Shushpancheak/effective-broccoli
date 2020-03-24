@@ -4,18 +4,9 @@
 #include <utility>
 #include <cassert>
 #include "support/IntrusiveList.hpp"
+#include "constants/error_codes.hpp"
 
 namespace objects {
-
-enum ChunkErrorCodes {
-  NO_ERROR,
-  FALSE_TYPE,
-  CTOR_FAILED,
-  BAD_PTR,
-  ALREADY_DELETED,
-  OUT_OF_BOUNDS,
-  OBJECT_NOT_PRESENT
-};
 
 using TypeID = size_t;
 
@@ -46,6 +37,14 @@ public:
    */
   template<typename T, typename... Args>
   T* Add(Args&&... args);
+
+  /**
+   * Deletes the object pointed to by item_ptr, not using any destructor.
+   * There may not even be an object, the deletion shall happen anyway.
+   *
+   * @warning DO NOT use with non-PODs.
+   */
+  void HardDelete(void* item_ptr);
 
   /**
    * Deletes the object pointed to by item_ptr, using T's destructor.
@@ -188,6 +187,11 @@ T* Chunk<ObjectsInChunk>::Add(Args&&... args) {
   }
 
   return nullptr;
+}
+
+template<size_t ObjectsInChunk>
+void Chunk<ObjectsInChunk>::HardDelete(void* item_ptr) {
+  Free(item_ptr, 1);
 }
 
 template<size_t ObjectsInChunk>

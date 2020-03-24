@@ -1,4 +1,7 @@
 submodules/sfml-compiled/
+submodules/googletest/
+CMakeSettings.json
+Folder.DotSettings
 cmake-build-debug
 
 ###############################################################################

@@ -17,7 +17,7 @@ public:
   }
 
 protected:
-  size_t entity_id_;
+  size_t entity_id_ = 0;
 };
 
 template <typename T>

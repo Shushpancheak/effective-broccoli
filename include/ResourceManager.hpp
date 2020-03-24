@@ -1,5 +1,5 @@
-#ifndef EFFECTIVE_BROCOLLI_RESOURCEMANAGER_HPP
-#define EFFECTIVE_BROCOLLI_RESOURCEMANAGER_HPP
+#ifndef EFFECTIVE_BROCOLLI_RESOURCE_MANAGER_HPP
+#define EFFECTIVE_BROCOLLI_RESOURCE_MANAGER_HPP
 
 #include <string>
 #include <unordered_map>
@@ -10,20 +10,29 @@
 class ResourceManager {
 private:
   ResourceManager();
+  ~ResourceManager() = default;
 
+public:
+  ResourceManager(const ResourceManager& other) = delete;
+  ResourceManager(ResourceManager&& other) = delete;
+  ResourceManager& operator=(const ResourceManager&) = delete;
+  ResourceManager& operator=(ResourceManager&&) = delete;
+
+  /**
+   * Load texture into the memory
+   */
+  int Load(const std::string& path);
+
+  /**
+   * Get previously loaded texture
+   */
+  sf::Texture& Get(const std::string& path);
+
+  static ResourceManager* GetInstance();
+
+private:
   static ResourceManager* resource_manager_;
   std::unordered_map<std::string, sf::Texture> map_;
-public:
-  /// Load texture into the memory
-  int load(const std::string& path);
-
-  /// Get previously loaded texture
-  sf::Texture& get(const std::string& path);
-
-  ResourceManager(ResourceManager &other) = delete;
-  void operator=(const ResourceManager &) = delete;
-
-  static ResourceManager *GetInstance();
 };
 
-#endif //EFFECTIVE_BROCOLLI_RESOURCEMANAGER_HPP
+#endif //EFFECTIVE_BROCOLLI_RESOURCE_MANAGER_HPP

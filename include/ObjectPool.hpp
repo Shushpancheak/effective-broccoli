@@ -1,13 +1,9 @@
 #ifndef EFFECTIVE_BROCOLLI_OBJECT_POOL
 #define EFFECTIVE_BROCOLLI_OBJECT_POOL
 
+#include "constants/error_codes.hpp"
 #include "support/IntrusiveList.hpp"
 #include "Chunk.hpp"
-
-enum ObjectPoolErrorCodes {
-  NO_ERROR,
-  OBJECT_NOT_FOUND
-};
 
 template<size_t ObjectsPerChunk = 10>
 class ObjectPool {
@@ -28,8 +24,9 @@ public:
    *
    * The created object may be deallocated in following cases:
    * 1) via DeleteObject<T>(ptr)
-   * 2) on Destruction of ObjectPool. WARNING! in this case, destructors of objects
-   *    still present in object pool won't be called.
+   * 2) on Destruction of ObjectPool.
+   *    @warning in this case, destructors of objects
+   *             still present in object pool won't be called.
    *
    * @return pointer to created object. Returns nullptr on failure.
    */
@@ -40,11 +37,20 @@ public:
    * Calls a destructor on object pointed to by obj_ptr and nullifies it.
    *
    * @return Error Codes:
-   * OBJECT_NOT_FOUND - object pointed to by obj_ptr is not present in any of chunks.
+   * NOT_FOUND - object pointed to by obj_ptr is not present in any of chunks.
    */
   template<typename T>
   int DeleteObject(T* obj_ptr);
 
+  /**
+   * As opposed to DeleteObject<T>, does not call a destructor, but simply
+   * rewrites memory pointed to by data_ptr, thus making the space available
+   * for using later.
+   *
+   * @returb Error Codes:
+   * NOT_FOUND - data pointed to by data_ptr is not found in any of chunks.
+   */
+  int Free(void* data_ptr);
 
 private:
   IntrusiveList<Chunk> chunks_;
@@ -80,13 +86,25 @@ template<size_t ObjectsPerChunk>
 template<typename T>
 int ObjectPool<ObjectsPerChunk>::DeleteObject(T* obj_ptr) {
   for (auto& chunk : chunks_) {
-    if (chunk.GetPresentStatus(obj_ptr) == objects::ChunkErrorCodes::NO_ERROR) {
+    if (chunk.GetPresentStatus(obj_ptr) == NO_ERROR) {
       chunk.template Delete<T>(obj_ptr);
       return NO_ERROR;
     }
   }
 
-  return OBJECT_NOT_FOUND;
+  return NOT_FOUND;
+}
+
+template<size_t ObjectsPerChunk>
+int ObjectPool<ObjectsPerChunk>::Free(void* data_ptr) {
+  for (auto& chunk : chunks_) {
+    if (chunk.GetPresentStatus(data_ptr) == NO_ERROR) {
+      chunk.HardDelete(data_ptr);
+      return NO_ERROR;
+    }
+  }
+
+  return NOT_FOUND;
 }
 
 #endif // EFFECTIVE_BROCOLLI_OBJECT_POOL

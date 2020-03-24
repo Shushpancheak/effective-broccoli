@@ -1,8 +1,5 @@
-#ifndef EFFECTIVE_BROCOLLI_TYPECOUNTER_HPP
-#define EFFECTIVE_BROCOLLI_TYPECOUNTER_HPP
-
-#include <cstddef>
-
+#ifndef EFFECTIVE_BROCOLLI_TYPE_COUNTER_HPP
+#define EFFECTIVE_BROCOLLI_TYPE_COUNTER_HPP
 
 class TypeCounter {
 public:
@@ -15,7 +12,8 @@ public:
     return cnt_;
   }
 
+private:
   static size_t cnt_;
 };
 
-#endif //EFFECTIVE_BROCOLLI_TYPECOUNTER_HPP
+#endif //EFFECTIVE_BROCOLLI_TYPE_COUNTER_HPP

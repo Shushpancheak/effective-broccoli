@@ -1,19 +1,35 @@
 #include "EntityManager.hpp"
 
 
-EntityPtr EntityManager::GetEntity(size_t entity_id) {
+EntityPtr EntityManager::GetEntity(const size_t entity_id) {
   if (map_.count(entity_id) == 0) {
     return nullptr;
   }
+
   return map_[entity_id];
 }
 
-int EntityManager::DeleteEntity(size_t entity_id) {
+int EntityManager::DeletePodEntity(const size_t entity_id) {
   if (map_.count(entity_id) == 0) {
-    return NOT_EXIST;
+    return NOT_FOUND;
   }
-  auto target = map_[entity_id];
-  entity_pool_.Delete(target);
+
+  const auto target = map_[entity_id];
+  entity_pool_.Free(target);
   map_.erase(entity_id);
+
+  return NO_ERROR;
+}
+
+template<typename T>
+int EntityManager::DeleteEntity(const size_t entity_id) {
+  if (map_.count(entity_id) == 0) {
+    return NOT_FOUND;
+  }
+
+  const auto target = map_[entity_id];
+  entity_pool_.DeleteObject<T>(target);
+  map_.erase(entity_id);
+
   return NO_ERROR;
 }
