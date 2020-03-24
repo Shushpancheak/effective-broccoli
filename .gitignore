@@ -1,4 +1,5 @@
 submodules/sfml-compiled/
+cmake-build-debug
 
 ###############################################################################
 ## Ignore Visual Studio temporary files, build results, and

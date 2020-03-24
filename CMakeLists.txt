@@ -17,10 +17,22 @@ include_directories("include")
 set (
   SOURCES
   src/Entity.cpp
+  src/ResourceManager.cpp
+  src/Component.cpp
+  src/TypeCounter.cpp
+  src/GraphicComponent.cpp
+  src/ComponentManager.cpp
+  src/EntityManager.cpp
 )
 set (
   HEADERS
   include/Entity.hpp
+  include/ResourceManager.hpp
+  include/Component.hpp
+  include/TypeCounter.hpp
+  include/GraphicComponent.hpp
+  include/ComponentManager.hpp
+  include/EntityManager.hpp
 )
 
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES} src/main.cpp)
