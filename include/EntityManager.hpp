@@ -18,8 +18,8 @@ public:
   template<typename T>
   int       DeleteEntity(size_t entity_id);
 
-  template<typename T>
-  int       AddEntity();
+  template<typename T, typename... Args>
+  int       AddEntity(Args&&... args);
 
 private:
   static size_t current_id_;
@@ -29,10 +29,10 @@ private:
 
 size_t EntityManager::current_id_ = 0;
 
-template<typename T>
-int EntityManager::AddEntity() {
+template<typename T, typename... Args>
+int EntityManager::AddEntity(Args&&... args) {
   auto entity_id = EntityManager::current_id_++;
-  T* ptr = entity_pool_.CreateObject<T>(entity_id);
+  T* ptr = entity_pool_.CreateObject<T>(entity_id, std::forward<Args>(args)...);
   if (!ptr) {
     return ALLOC_FAILED;
   }

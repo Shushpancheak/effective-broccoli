@@ -8,7 +8,7 @@ class Component {
 public:
   static const size_t type_id;
 
-  static size_t GetTypeId()  {
+  static size_t GetTypeID()  {
     return type_id;
   }
 

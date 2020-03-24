@@ -22,6 +22,9 @@ public:
   ~Entity() = default;
 
   static const size_t type_id;
+  static size_t GetTypeID();
+
+  size_t GetEntityID() const;
 
 private:
   size_t id_;
