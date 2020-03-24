@@ -171,7 +171,7 @@ Chunk<ObjectsInChunk>::~Chunk() {
 template<size_t ObjectsInChunk>
 template<typename T, typename ... Args>
 T* Chunk<ObjectsInChunk>::Add(Args&&... args) {
-  const void* available_ptr = GetAvailable();
+  void* available_ptr = GetAvailable();
   if (available_ptr == nullptr || IsFull()) {
     return nullptr;
   }
@@ -179,11 +179,11 @@ T* Chunk<ObjectsInChunk>::Add(Args&&... args) {
   assert(available_ptr >= buffer_ &&
          available_ptr <= buffer_ + ObjectsInChunk * object_size_);
 
-  const int res = Construct<T, Args...>(available_ptr, std::forward(args)...);
+  const int res = Construct<T, Args...>(available_ptr, std::forward<Args>(args)...);
 
   if (res == 0) {
     ++size_;
-    return available_ptr;
+    return reinterpret_cast<T*>(available_ptr);
   }
 
   return nullptr;

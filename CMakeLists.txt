@@ -44,10 +44,8 @@ add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES} src/main.cpp)
 set(BUILD_TESTS OFF CACHE BOOL "Build tests")
 if (BUILD_TESTS)
 
-if (MSVC)
 add_subdirectory(submodules/googletest)
 include_directories(submodules/googletest/googletest/include)
-endif ()
 
 enable_testing()
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
@@ -64,7 +62,7 @@ add_executable(${UNIT_TESTS_NAME} ${UNIT_TESTS_FILE})
 target_link_libraries(${UNIT_TESTS_NAME} gtest_main ${LIBRARY_NAME})
 add_test(${UNIT_TESTS_NAME} ${UNIT_TESTS_NAME})
 
-# For next libraries.
+# For next_ libraries.
 set(BUILD_TESTS OFF CACHE BOOL "Build tests" FORCE)
 
 endif() # BUILD_TESTS

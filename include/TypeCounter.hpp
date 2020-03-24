@@ -1,6 +1,8 @@
 #ifndef EFFECTIVE_BROCOLLI_TYPE_COUNTER_HPP
 #define EFFECTIVE_BROCOLLI_TYPE_COUNTER_HPP
 
+#include <cstddef>
+
 class TypeCounter {
 public:
   template <typename U>
