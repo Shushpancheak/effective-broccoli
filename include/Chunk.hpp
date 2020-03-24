@@ -48,6 +48,21 @@ public:
   template<typename T>
   int Delete(T* item_ptr);
 
+  /**
+   * @return does chunk has no objects.
+   */
+  bool IsEmpty() const;
+
+  /**
+   * @return is chunk full with objects.
+   */
+  bool IsFull() const;
+
+  /**
+   * @return number of objects held in chunk.
+   */
+  size_t Size() const;
+
 private:
   /**
    * Construct the item of type T with args.
@@ -83,6 +98,9 @@ private:
   char* buffer_;
   const size_t object_size_;
   const TypeID type_id_;
+
+  // Not really needed, but it can greatly optimize IsEmpty().
+  size_t size_;
 };
 
 template <size_t ObjectsInChunk>
@@ -90,7 +108,8 @@ Chunk<ObjectsInChunk>::Chunk(
   const size_t object_size,
   const TypeID type_id)
   : object_size_(object_size)
-  , type_id_(type_id) {
+  , type_id_(type_id)
+  , size_(0) {
   buffer_ = new char[object_size * ObjectsInChunk];
   Free(buffer_, ObjectsInChunk);
 }
@@ -104,7 +123,7 @@ template<size_t ObjectsInChunk>
 template<typename T, typename ... Args>
 T* Chunk<ObjectsInChunk>::Add(Args&&... args) {
   const void* available_ptr = GetAvailable();
-  if (available_ptr == nullptr) {
+  if (available_ptr == nullptr || IsFull()) {
     return nullptr;
   }
 
@@ -113,12 +132,19 @@ T* Chunk<ObjectsInChunk>::Add(Args&&... args) {
 
   const int res = Construct<T, Args...>(available_ptr, std::forward(args)...);
 
-  return res == 0 ? available_ptr : nullptr;
+  if (res == 0) {
+    ++size_;
+    return available_ptr;
+  }
+
+  return nullptr;
 }
 
 template<size_t ObjectsInChunk>
 template<typename T>
 int Chunk<ObjectsInChunk>::Delete(T* item_ptr) {
+  assert(!IsEmpty());
+
   assert(reinterpret_cast<void*>(item_ptr) >= buffer_ &&
          reinterpret_cast<void*>(item_ptr) <= buffer_ +
                                               ObjectsInChunk * object_size_);
@@ -127,7 +153,24 @@ int Chunk<ObjectsInChunk>::Delete(T* item_ptr) {
 
   Free(item_ptr, 1);
 
+  --size_;
+
   return 0;
+}
+
+template<size_t ObjectsInChunk>
+bool Chunk<ObjectsInChunk>::IsEmpty() const {
+  return size_ == 0;
+}
+
+template<size_t ObjectsInChunk>
+bool Chunk<ObjectsInChunk>::IsFull() const {
+  return size_ == ObjectsInChunk;
+}
+
+template<size_t ObjectsInChunk>
+size_t Chunk<ObjectsInChunk>::Size() const {
+  return size_;
 }
 
 // - - - - - - - - - - - - - - - - PRIVATES - - - - - - - - - - - - - - - - - -
