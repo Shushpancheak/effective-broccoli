@@ -23,7 +23,7 @@ public:
 
   // Prefix increment
   Iterator& operator++() {
-    current_ = current_->next_;
+    current_ = current_->next_node;
     return *this;
   }
 
@@ -103,7 +103,7 @@ private:
 
 template<typename T>
 void IntrusiveList<T>::PushFront(Node* node) noexcept {
-  node->LinkBefore(head_.next_);
+  node->LinkBefore(head_.next_node);
 }
 
 template<typename T>
@@ -117,7 +117,7 @@ T* IntrusiveList<T>::PopFront() {
     return nullptr;
   }
 
-  Node* res = head_.next_;
+  Node* res = head_.next_node;
   res->Unlink();
   return res->AsItem();
 }
@@ -128,7 +128,7 @@ T* IntrusiveList<T>::PopBack() {
     return nullptr;
   }
 
-  Node* res = head_.prev_;
+  Node* res = head_.prev_node;
   res->Unlink();
   return res->AsItem();
 }
@@ -139,18 +139,18 @@ void IntrusiveList<T>::Append(IntrusiveList& other) {
     return;
   }
 
-  Node* other_front = other.head_.next_;
-  Node* other_back = other.head_.prev_;
+  Node* other_front = other.head_.next_node;
+  Node* other_back = other.head_.prev_node;
 
-  other_back->next_ = &head_;
-  other_front->prev_ = head_.prev_;
+  other_back->next_node = &head_;
+  other_front->prev_node = head_.prev_node;
 
-  Node* back = head_.prev_;
+  Node* back = head_.prev_node;
 
-  head_.prev_ = other_back;
-  back->next_ = other_front;
+  head_.prev_node = other_back;
+  back->next_node = other_front;
 
-  other.head_.next_ = other.head_.prev_ = &other.head_;
+  other.head_.next_node = other.head_.prev_node = &other.head_;
 }
 
 template<typename T>
@@ -160,7 +160,7 @@ size_t IntrusiveList<T>::Size() const {
 
 template<typename T>
 typename IntrusiveList<T>::Iterator IntrusiveList<T>::begin() {
-  return Iterator(head_.next_, &head_);
+  return Iterator(head_.next_node, &head_);
 }
 
 template<typename T>
@@ -170,7 +170,7 @@ typename IntrusiveList<T>::Iterator IntrusiveList<T>::end() {
 
 template<typename T>
 typename IntrusiveList<T>::ConstIterator IntrusiveList<T>::begin() const {
-  return ConstIterator(head_.next_, &head_);
+  return ConstIterator(head_.next_node, &head_);
 }
 
 template<typename T>
@@ -180,9 +180,9 @@ typename IntrusiveList<T>::ConstIterator IntrusiveList<T>::end() const {
 
 template<typename T>
 void IntrusiveList<T>::Clear() {
-  Node* current = head_.next_;
+  Node* current = head_.next_node;
   while (current != &head_) {
-    Node* next = current->next_;
+    Node* next = current->next_node;
     current->Unlink();
     current = next;
   }
@@ -190,7 +190,7 @@ void IntrusiveList<T>::Clear() {
 
 template<typename T>
 bool IntrusiveList<T>::IsEmpty() const noexcept {
-  return head_.next_ == &head_;
+  return head_.next_node == &head_;
 }
 
 template<typename T>
@@ -211,7 +211,7 @@ IntrusiveList<T>::IntrusiveList(IntrusiveList&& other) noexcept {
 
 template<typename T>
 void IntrusiveList<T>::InitEmpty() {
-  head_.next_ = head_.prev_ = &head_;
+  head_.next_node = head_.prev_node = &head_;
 }
 
 #endif
