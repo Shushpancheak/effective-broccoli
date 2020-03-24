@@ -29,35 +29,35 @@ public:
   T* AsItem() noexcept;
 
 //private:
-  Node* prev_ = nullptr;
-  Node* next_ = nullptr;
+  Node* prev_node = nullptr;
+  Node* next_node = nullptr;
 };
 
 template<typename T>
 bool IntrusiveNode<T>::IsLinked() const noexcept {
-  return next_ != nullptr;
+  return next_node != nullptr;
 }
 
 template<typename T>
 void IntrusiveNode<T>::LinkBefore(Node* next) noexcept {
   assert(!IsLinked());
 
-  prev_ = next->prev_;
-  prev_->next_ = this;
-  next = next;
-  next->prev_ = this;
+  prev_node = next->prev_node;
+  prev_node->next_node = this;
+  next_node = next;
+  next->prev_node = this;
 }
 
 template<typename T>
 void IntrusiveNode<T>::Unlink() noexcept {
-  if (next_) {
-    next_->prev_ = prev_;
+  if (next_node) {
+    next_node->prev_node = prev_node;
   }
-  if (prev_) {
-    prev_->next_ = next_;
+  if (prev_node) {
+    prev_node->next_node = next_node;
   }
 
-  next_ = prev_ = nullptr;
+  next_node = prev_node = nullptr;
 }
 
 template<typename T>
