@@ -69,7 +69,7 @@ template<typename T, typename ... Args>
 T* ObjectPool<ObjectsPerChunk>::CreateObject(Args&&... args) {
   for (auto& chunk : chunks_) {
     if (chunk.GetTypeID() == T::GetTypeID() && !chunk.IsFull()) {
-      T* res_ptr = chunk.template Add<T>(std::forward(args)...);
+      T* res_ptr = chunk.template Add<T>(std::forward<Args>(args)...);
       if (res_ptr != nullptr) {
         return res_ptr;
       }
@@ -79,7 +79,7 @@ T* ObjectPool<ObjectsPerChunk>::CreateObject(Args&&... args) {
   Chunk* new_chunk = new Chunk(sizeof(T), T::GetTypeID());
 
   chunks_.PushFront(new_chunk);
-  return chunks_.begin()->template Add<T>(std::forward(args)...);
+  return chunks_.begin()->template Add<T>(std::forward<Args>(args)...);
 }
 
 template<size_t ObjectsPerChunk>
