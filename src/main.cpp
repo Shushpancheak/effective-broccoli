@@ -1,28 +1,19 @@
 #include "Entity.hpp"
 #include "ResourceManager.hpp"
 #include "SFML/Graphics.hpp"
+#include "Component.hpp"
+
+#include <iostream>
+
+class TestComponent1 : public Component<TestComponent1> {
+
+};
+
+class TestComponent2 : public Component<TestComponent2> {
+
+};
 
 int main() {
-  sf::RenderWindow window(sf::VideoMode(200, 200), "effective-brocolli");
-  sf::CircleShape shape(100.f);
-  shape.setFillColor(sf::Color::Green);
-  while (window.isOpen()) {
-    sf::Event event{};
-
-    while (window.pollEvent(event)) {
-      if (event.type == sf::Event::Closed) {
-        window.close();
-      }
-    }
-
-    window.clear();
-
-
-    window.draw(shape);
-
-
-    window.display();
-  }
 
   return 0;
 }
