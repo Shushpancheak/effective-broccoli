@@ -135,16 +135,35 @@ private:
   static bool IsAvailable(void* item_addr);
 
   /**
-   * Get first available place where a new object can be placed.
+   * Finds first available address in given range [start, end).
+   */
+  void* GetAvailable(void* start, void* end) const;
+
+  /**
+   * Get first available address where a new object can be placed.
    *
    * @return Address of the item; nullptr on failure.
    */
   void* GetAvailable() const;
 
+// Utilities
+private:
+  #define OP_ASSERT_IN_BUFFER_RANGE(ptr) \
+    assert(reinterpret_cast<char*>(ptr) >= buffer_start_ && \
+           reinterpret_cast<char*>(ptr) <  buffer_end_)
+#define OP_ASSERT_IN_BUFFER_RANGE_END_INCLUDED(ptr) \
+    assert(reinterpret_cast<char*>(ptr) >= buffer_start_ && \
+           reinterpret_cast<char*>(ptr) <= buffer_end_)
+  #define OP_ASSERT_ADDRESS_ALIGNED(ptr) \
+    assert((reinterpret_cast<size_t>(ptr) - \
+            reinterpret_cast<size_t>(buffer_start_)) % object_size_ == 0)
+
+// Fields
 private:
   static const size_t EMPTY_MEMORY_BYTES = 0xDEADBEEF;
 
-  char* buffer_;
+  char* buffer_start_;
+  char* buffer_end_; // Points to memory just outside the buffer.
   const size_t object_size_;
   const TypeID type_id_;
 
@@ -159,25 +178,26 @@ Chunk<ObjectsInChunk>::Chunk(
   : object_size_(object_size)
   , type_id_(type_id)
   , size_(0) {
-  buffer_ = new char[object_size * ObjectsInChunk];
-  Free(buffer_, ObjectsInChunk);
+  buffer_start_ = new char[object_size * ObjectsInChunk];
+  Free(buffer_start_, ObjectsInChunk);
+  buffer_end_ = buffer_start_ + (ObjectsInChunk + 1) * object_size_;
 }
 
 template<size_t ObjectsInChunk>
 Chunk<ObjectsInChunk>::~Chunk() {
-  delete[] buffer_;
+  delete[] buffer_start_;
 }
 
 template<size_t ObjectsInChunk>
 template<typename T, typename ... Args>
 T* Chunk<ObjectsInChunk>::Add(Args&&... args) {
-  void* available_ptr = GetAvailable();
-  if (available_ptr == nullptr || IsFull()) {
+  if (this->IsFull()) {
     return nullptr;
   }
 
-  assert(available_ptr >= buffer_ &&
-         available_ptr <= buffer_ + ObjectsInChunk * object_size_);
+  void* available_ptr = GetAvailable();
+  assert(available_ptr != nullptr); // Checked for fullness earlier.
+  OP_ASSERT_IN_BUFFER_RANGE(available_ptr);
 
   const int res = Construct<T, Args...>(available_ptr, std::forward<Args>(args)...);
 
@@ -192,19 +212,17 @@ T* Chunk<ObjectsInChunk>::Add(Args&&... args) {
 template<size_t ObjectsInChunk>
 void Chunk<ObjectsInChunk>::HardDelete(void* item_ptr) {
   Free(item_ptr, 1);
+
+  --size_;
 }
 
 template<size_t ObjectsInChunk>
 template<typename T>
 int Chunk<ObjectsInChunk>::Delete(T* item_ptr) {
   assert(!IsEmpty());
-
-  assert(reinterpret_cast<void*>(item_ptr) >= buffer_ &&
-         reinterpret_cast<void*>(item_ptr) <= buffer_ +
-                                              ObjectsInChunk * object_size_);
+  OP_ASSERT_IN_BUFFER_RANGE(item_ptr);
 
   item_ptr->~T();
-
   Free(item_ptr, 1);
 
   --size_;
@@ -216,14 +234,14 @@ template<size_t ObjectsInChunk>
 template<typename T>
 void Chunk<ObjectsInChunk>::DeleteAll() {
   for (size_t i = 0; i < ObjectsInChunk; ++i) {
-    DeleteIfPresent(buffer_ + i);
+    DeleteIfPresent(buffer_start_ + i);
   }
 }
 
 template<size_t ObjectsInChunk>
 template<typename T>
 int Chunk<ObjectsInChunk>::GetPresentStatus(T* item_ptr) {
-  if (item_ptr < buffer_ || item_ptr > buffer_ + ObjectsInChunk * object_size_) {
+  if (item_ptr < buffer_start_ || item_ptr > buffer_start_ + ObjectsInChunk * object_size_) {
     return OUT_OF_BOUNDS;
   }
 
@@ -297,8 +315,8 @@ TypeID Chunk<ObjectsInChunk>::GetTypeID() const {
 template<size_t ObjectsInChunk>
 template<typename T, typename ... Args>
 int Chunk<ObjectsInChunk>::Construct(void* item_addr, Args&&... args) {
-  assert(item_addr >= buffer_ &&
-         item_addr <= buffer_ + ObjectsInChunk * object_size_);
+  OP_ASSERT_IN_BUFFER_RANGE(item_addr);
+  OP_ASSERT_ADDRESS_ALIGNED(item_addr);
 
   if (T::GetTypeID() != type_id_) {
     return FALSE_TYPE;
@@ -314,11 +332,18 @@ int Chunk<ObjectsInChunk>::Construct(void* item_addr, Args&&... args) {
 }
 
 template<size_t ObjectsInChunk>
-void* Chunk<ObjectsInChunk>::GetAvailable() const {
-  for (size_t i = 0; i < ObjectsInChunk; ++i) {
-    void* cur_addr = buffer_ + i * object_size_;
-    if (IsAvailable(cur_addr)) {
-      return cur_addr;
+void* Chunk<ObjectsInChunk>::GetAvailable(void* start, void* end) const {
+  OP_ASSERT_IN_BUFFER_RANGE(start);
+  OP_ASSERT_IN_BUFFER_RANGE_END_INCLUDED(end);
+  OP_ASSERT_ADDRESS_ALIGNED(start);
+  OP_ASSERT_ADDRESS_ALIGNED(end);
+  assert(end >= start);
+
+  for (char* addr = static_cast<char*>(start);
+       addr != end;
+       addr += object_size_) {
+    if (IsAvailable(addr)) {
+      return addr;
     }
   }
 
@@ -326,14 +351,30 @@ void* Chunk<ObjectsInChunk>::GetAvailable() const {
 }
 
 template<size_t ObjectsInChunk>
+void* Chunk<ObjectsInChunk>::GetAvailable() const {
+  // Starting from size_, because it is
+  // the most likely spot to have a free space.
+  void* buffer_at_size_ptr = buffer_start_ + size_ * object_size_;
+
+  void* available_ptr = GetAvailable(buffer_at_size_ptr, buffer_end_);
+  if (available_ptr) {
+    return available_ptr;
+  }
+
+  // Now try to find somewhere from the start.
+  return GetAvailable(buffer_start_, buffer_at_size_ptr);
+}
+
+template<size_t ObjectsInChunk>
 // ReSharper disable once CppMemberFunctionMayBeConst
 void Chunk<ObjectsInChunk>::Free(void* item_addr, const size_t count) {
-  assert(item_addr >= buffer_ &&
-         item_addr <= buffer_ + ObjectsInChunk * object_size_);
+  OP_ASSERT_IN_BUFFER_RANGE(item_addr);
+  OP_ASSERT_ADDRESS_ALIGNED(item_addr);
 
-  for (size_t i = 0; i < count; ++i) {
-    *reinterpret_cast<size_t*>(item_addr + i * object_size_) =
-      EMPTY_MEMORY_BYTES;
+  char* item_byte_addr = reinterpret_cast<char*>(item_addr);
+  char* end = item_byte_addr + count * object_size_;
+  for (char* addr = item_byte_addr; addr < end; addr += object_size_) {
+    *reinterpret_cast<size_t*>(addr) = EMPTY_MEMORY_BYTES;
   }
 }
 
