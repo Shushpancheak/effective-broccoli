@@ -4,8 +4,8 @@
 #include <unordered_map>
 #include <utility>
 #include "Component.hpp"
-#include "ObjectPool.hpp"
 #include "constants/error_codes.hpp"
+#include "memory/ObjectPool.hpp"
 #include "support/typedefs.hpp"
 
 class ComponentManager {
@@ -32,7 +32,7 @@ public:
 
   int DeleteAllComponents(EntityID entity_id);
 private:
-  ObjectPool<> component_pool_;
+  ObjectPool component_pool_;
   std::unordered_map<EntityID, std::unordered_map<ComponentID, ComponentPtr>> map_;
 };
 

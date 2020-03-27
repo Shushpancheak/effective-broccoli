@@ -3,11 +3,10 @@
 
 #include "constants/error_codes.hpp"
 #include "support/IntrusiveList.hpp"
-#include "Chunk.hpp"
+#include "memory/DataChunk.hpp"
 
-template<size_t ObjectsPerChunk = 10>
 class ObjectPool {
-  using Chunk = objects::Chunk<ObjectsPerChunk>;
+  using Chunk = DataChunk;
 
 public:
   ObjectPool() = default;
@@ -53,23 +52,14 @@ public:
   int Free(void* data_ptr);
 
 private:
-  IntrusiveList<Chunk> chunks_;
+  IntrusiveList<DataChunk> chunks_;
 };
 
-template<size_t ObjectsPerChunk>
-ObjectPool<ObjectsPerChunk>::~ObjectPool() {
-  while (!chunks_.IsEmpty()) {
-    Chunk* chunk = chunks_.PopFront();
-    delete chunk;
-  }
-}
-
-template<size_t ObjectsPerChunk>
 template<typename T, typename ... Args>
-T* ObjectPool<ObjectsPerChunk>::CreateObject(Args&&... args) {
+T* ObjectPool::CreateObject(Args&&... args) {
   for (auto& chunk : chunks_) {
     if (chunk.GetTypeID() == T::GetTypeID() && !chunk.IsFull()) {
-      T* res_ptr = chunk.template Add<T>(std::forward<Args>(args)...);
+      T* res_ptr = chunk.Add<T>(std::forward<Args>(args)...);
       if (res_ptr != nullptr) {
         return res_ptr;
       }
@@ -79,27 +69,14 @@ T* ObjectPool<ObjectsPerChunk>::CreateObject(Args&&... args) {
   Chunk* new_chunk = new Chunk(sizeof(T), T::GetTypeID());
 
   chunks_.PushFront(new_chunk);
-  return chunks_.begin()->template Add<T>(std::forward<Args>(args)...);
+  return chunks_.begin()->Add<T>(std::forward<Args>(args)...);
 }
 
-template<size_t ObjectsPerChunk>
 template<typename T>
-int ObjectPool<ObjectsPerChunk>::DeleteObject(T* obj_ptr) {
+int ObjectPool::DeleteObject(T* obj_ptr) {
   for (auto& chunk : chunks_) {
     if (chunk.GetPresentStatus(obj_ptr) == NO_ERROR) {
-      chunk.template Delete<T>(obj_ptr);
-      return NO_ERROR;
-    }
-  }
-
-  return NOT_FOUND;
-}
-
-template<size_t ObjectsPerChunk>
-int ObjectPool<ObjectsPerChunk>::Free(void* data_ptr) {
-  for (auto& chunk : chunks_) {
-    if (chunk.GetPresentStatus(data_ptr) == NO_ERROR) {
-      chunk.HardDelete(data_ptr);
+      chunk.Delete<T>(obj_ptr);
       return NO_ERROR;
     }
   }

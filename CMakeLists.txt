@@ -23,6 +23,8 @@ set (
   src/GraphicComponent.cpp
   src/ComponentManager.cpp
   src/EntityManager.cpp
+  src/ObjectPool.cpp
+  src/DataChunk.cpp
 )
 set (
   HEADERS
@@ -33,6 +35,8 @@ set (
   include/GraphicComponent.hpp
   include/ComponentManager.hpp
   include/EntityManager.hpp
+  include/memory/ObjectPool.hpp
+  include/memory/DataChunk.hpp
 )
 
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES} src/main.cpp)
@@ -56,10 +60,11 @@ include_directories(${gtest_SOURCE_DIR})
 set(UNIT_TESTS_NAME "run-tests-${PROJECT_NAME}")
 set(UNIT_TESTS_FILE "test/test.cpp")
 
-add_executable(${UNIT_TESTS_NAME} ${UNIT_TESTS_FILE})
+add_executable(${UNIT_TESTS_NAME} ${UNIT_TESTS_FILE} ${HEADERS} ${SOURCES})
 
-# Link test executable against gtest & gtest_main
-target_link_libraries(${UNIT_TESTS_NAME} gtest_main ${LIBRARY_NAME})
+# Link test executable against gtest & gtest_main & sfml
+target_link_libraries(${UNIT_TESTS_NAME} gtest_main sfml-graphics sfml-audio sfml-system)
+
 add_test(${UNIT_TESTS_NAME} ${UNIT_TESTS_NAME})
 
 # For next_ libraries.

@@ -1,14 +1,10 @@
-#ifndef EFFECTIVE_BROCOLLI_CHUNK
-#define EFFECTIVE_BROCOLLI_CHUNK
+#ifndef EFFECTIVE_BROCOLLI_DATA_CHUNK
+#define EFFECTIVE_BROCOLLI_DATA_CHUNK
 
 #include <utility>
 #include <cassert>
 #include "support/IntrusiveList.hpp"
 #include "constants/error_codes.hpp"
-
-namespace objects {
-
-using TypeID = size_t;
 
 /**
  * Chunk of objects of certain type, that is decided at runtime.
@@ -19,16 +15,18 @@ using TypeID = size_t;
  *
  * The type stored also has to be at least one word long.
  */
-template<size_t ObjectsInChunk = 10>
-class Chunk : public IntrusiveNode<Chunk<ObjectsInChunk>> {
-public:
-  explicit Chunk(const size_t object_size, const TypeID type_id);
-  ~Chunk();
+class DataChunk : public IntrusiveNode<DataChunk> {
+  using TypeID = size_t;
 
-  Chunk(const Chunk& other) = delete;
-  Chunk(Chunk&& other) = delete;
-  Chunk& operator=(const Chunk& other) = delete;
-  Chunk& operator=(Chunk&& other) = delete;
+public:
+  explicit DataChunk(const size_t object_size, const TypeID type_id,
+                 const size_t object_count = 100);
+  ~DataChunk();
+
+  DataChunk(const DataChunk& other) = delete;
+  DataChunk(DataChunk&& other) = delete;
+  DataChunk& operator=(const DataChunk& other) = delete;
+  DataChunk& operator=(DataChunk&& other) = delete;
 
   /**
    * Emplaces the object with given args.
@@ -77,38 +75,38 @@ public:
   int DeleteIfPresent(T* item_ptr, size_t count);
 
   /**
-   * Deletes all objects in chunk, skipping uninitialized components,
-   * thus clearing all chunk.
+   * Deletes all objects in DataChunk, skipping uninitialized components,
+   * thus clearing all DataChunk.
    */
   template<typename T>
   void DeleteAll();
 
   /**
-   * @return NO_ERROR if item pointed to by item_ptr is present in chunk.
+   * @return NO_ERROR if item pointed to by item_ptr is present in DataChunk.
    * Error codes:
-   * OUT_OF_BOUNDS      - Pointer is out of bounds of chunk.
+   * OUT_OF_BOUNDS      - Pointer is out of bounds of DataChunk.
    * OBJECT_NOT_PRESENT - There is no object in address.
    */
   template<typename T>
   int GetPresentStatus(T* item_ptr);
 
   /**
-   * @return does chunk has no objects.
+   * @return does DataChunk has no objects.
    */
   bool IsEmpty() const;
 
   /**
-   * @return is chunk full with objects.
+   * @return is DataChunk full with objects.
    */
   bool IsFull() const;
 
   /**
-   * @return number of objects held in chunk.
+   * @return number of objects held in DataChunk.
    */
   size_t Size() const;
 
   /**
-   * @return static type id of object type held in chunk.
+   * @return static type id of object type held in DataChunk.
    */
   TypeID GetTypeID() const;
 
@@ -165,32 +163,15 @@ private:
   char* buffer_start_;
   char* buffer_end_; // Points to memory just outside the buffer.
   const size_t object_size_;
+  const size_t object_count_;
   const TypeID type_id_;
 
   // Not really needed, but it can greatly optimize IsEmpty().
   size_t size_;
 };
 
-template <size_t ObjectsInChunk>
-Chunk<ObjectsInChunk>::Chunk(
-  const size_t object_size,
-  const TypeID type_id)
-  : object_size_(object_size)
-  , type_id_(type_id)
-  , size_(0) {
-  buffer_start_ = new char[object_size * ObjectsInChunk];
-  Free(buffer_start_, ObjectsInChunk);
-  buffer_end_ = buffer_start_ + (ObjectsInChunk + 1) * object_size_;
-}
-
-template<size_t ObjectsInChunk>
-Chunk<ObjectsInChunk>::~Chunk() {
-  delete[] buffer_start_;
-}
-
-template<size_t ObjectsInChunk>
 template<typename T, typename ... Args>
-T* Chunk<ObjectsInChunk>::Add(Args&&... args) {
+T* DataChunk::Add(Args&&... args) {
   if (this->IsFull()) {
     return nullptr;
   }
@@ -209,16 +190,8 @@ T* Chunk<ObjectsInChunk>::Add(Args&&... args) {
   return nullptr;
 }
 
-template<size_t ObjectsInChunk>
-void Chunk<ObjectsInChunk>::HardDelete(void* item_ptr) {
-  Free(item_ptr, 1);
-
-  --size_;
-}
-
-template<size_t ObjectsInChunk>
 template<typename T>
-int Chunk<ObjectsInChunk>::Delete(T* item_ptr) {
+int DataChunk::Delete(T* item_ptr) {
   assert(!IsEmpty());
   OP_ASSERT_IN_BUFFER_RANGE(item_ptr);
 
@@ -230,31 +203,29 @@ int Chunk<ObjectsInChunk>::Delete(T* item_ptr) {
   return NO_ERROR;
 }
 
-template<size_t ObjectsInChunk>
 template<typename T>
-void Chunk<ObjectsInChunk>::DeleteAll() {
-  for (size_t i = 0; i < ObjectsInChunk; ++i) {
+void DataChunk::DeleteAll() {
+  for (size_t i = 0; i < object_count_; ++i) {
     DeleteIfPresent(buffer_start_ + i);
   }
 }
 
-template<size_t ObjectsInChunk>
 template<typename T>
-int Chunk<ObjectsInChunk>::GetPresentStatus(T* item_ptr) {
-  if (item_ptr < buffer_start_ || item_ptr > buffer_start_ + ObjectsInChunk * object_size_) {
+int DataChunk::GetPresentStatus(T* item_ptr) {
+  if (item_ptr < buffer_start_ || item_ptr > buffer_start_ + object_count_ * object_size_) {
     return OUT_OF_BOUNDS;
   }
 
   if (IsAvailable(item_ptr)) {
     return OBJECT_NOT_PRESENT;
-  } else {
+  }
+  else {
     return NO_ERROR;
   }
 }
 
-template<size_t ObjectsInChunk>
 template<typename T>
-int Chunk<ObjectsInChunk>::Delete(T* item_ptr, size_t count) {
+int DataChunk::Delete(T* item_ptr, size_t count) {
   for (size_t i = 0; i < count; ++i) {
     const int res = Delete(item_ptr + i);
 
@@ -266,9 +237,8 @@ int Chunk<ObjectsInChunk>::Delete(T* item_ptr, size_t count) {
   return NO_ERROR;
 }
 
-template<size_t ObjectsInChunk>
 template<typename T>
-int Chunk<ObjectsInChunk>::DeleteIfPresent(T* item_ptr) {
+int DataChunk::DeleteIfPresent(T* item_ptr) {
   if (IsAvailable(item_ptr)) {
     return ALREADY_DELETED;
   }
@@ -276,9 +246,8 @@ int Chunk<ObjectsInChunk>::DeleteIfPresent(T* item_ptr) {
   return Delete(item_ptr);
 }
 
-template<size_t ObjectsInChunk>
 template<typename T>
-int Chunk<ObjectsInChunk>::DeleteIfPresent(T* item_ptr, size_t count) {
+int DataChunk::DeleteIfPresent(T* item_ptr, size_t count) {
   for (size_t i = 0; i < count; ++i) {
     const int res = DeleteIfPresent(item_ptr + i);
 
@@ -290,31 +259,8 @@ int Chunk<ObjectsInChunk>::DeleteIfPresent(T* item_ptr, size_t count) {
   return NO_ERROR;
 }
 
-template<size_t ObjectsInChunk>
-bool Chunk<ObjectsInChunk>::IsEmpty() const {
-  return size_ == 0;
-}
-
-template<size_t ObjectsInChunk>
-bool Chunk<ObjectsInChunk>::IsFull() const {
-  return size_ == ObjectsInChunk;
-}
-
-template<size_t ObjectsInChunk>
-size_t Chunk<ObjectsInChunk>::Size() const {
-  return size_;
-}
-
-template<size_t ObjectsInChunk>
-TypeID Chunk<ObjectsInChunk>::GetTypeID() const {
-  return type_id_;
-}
-
-// - - - - - - - - - - - - - - - - PRIVATES - - - - - - - - - - - - - - - - - -
-
-template<size_t ObjectsInChunk>
 template<typename T, typename ... Args>
-int Chunk<ObjectsInChunk>::Construct(void* item_addr, Args&&... args) {
+int DataChunk::Construct(void* item_addr, Args&&... args) {
   OP_ASSERT_IN_BUFFER_RANGE(item_addr);
   OP_ASSERT_ADDRESS_ALIGNED(item_addr);
 
@@ -329,60 +275,6 @@ int Chunk<ObjectsInChunk>::Construct(void* item_addr, Args&&... args) {
   void* res_ptr = new (item_addr) T(std::forward<Args>(args)...);
 
   return (res_ptr == nullptr ? CTOR_FAILED : 0);
-}
-
-template<size_t ObjectsInChunk>
-void* Chunk<ObjectsInChunk>::GetAvailable(void* start, void* end) const {
-  OP_ASSERT_IN_BUFFER_RANGE(start);
-  OP_ASSERT_IN_BUFFER_RANGE_END_INCLUDED(end);
-  OP_ASSERT_ADDRESS_ALIGNED(start);
-  OP_ASSERT_ADDRESS_ALIGNED(end);
-  assert(end >= start);
-
-  for (char* addr = static_cast<char*>(start);
-       addr != end;
-       addr += object_size_) {
-    if (IsAvailable(addr)) {
-      return addr;
-    }
-  }
-
-  return nullptr;
-}
-
-template<size_t ObjectsInChunk>
-void* Chunk<ObjectsInChunk>::GetAvailable() const {
-  // Starting from size_, because it is
-  // the most likely spot to have a free space.
-  void* buffer_at_size_ptr = buffer_start_ + size_ * object_size_;
-
-  void* available_ptr = GetAvailable(buffer_at_size_ptr, buffer_end_);
-  if (available_ptr) {
-    return available_ptr;
-  }
-
-  // Now try to find somewhere from the start.
-  return GetAvailable(buffer_start_, buffer_at_size_ptr);
-}
-
-template<size_t ObjectsInChunk>
-// ReSharper disable once CppMemberFunctionMayBeConst
-void Chunk<ObjectsInChunk>::Free(void* item_addr, const size_t count) {
-  OP_ASSERT_IN_BUFFER_RANGE(item_addr);
-  OP_ASSERT_ADDRESS_ALIGNED(item_addr);
-
-  char* item_byte_addr = reinterpret_cast<char*>(item_addr);
-  char* end = item_byte_addr + count * object_size_;
-  for (char* addr = item_byte_addr; addr < end; addr += object_size_) {
-    *reinterpret_cast<size_t*>(addr) = EMPTY_MEMORY_BYTES;
-  }
-}
-
-template<size_t ObjectsInChunk>
-bool Chunk<ObjectsInChunk>::IsAvailable(void* item_addr) {
-  return *reinterpret_cast<size_t*>(item_addr) == EMPTY_MEMORY_BYTES;
-}
-
 }
 
 #endif

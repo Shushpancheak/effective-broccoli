@@ -1,8 +1,9 @@
 #include "gtest/gtest.h"
-#include "ObjectPool.hpp"
+#include "memory/ObjectPool.hpp"
 #include "Component.hpp"
 
-enum Consts {
+namespace consts {
+enum {
   FIRST_INT = 7,
   SECOND_INT = 42,
 
@@ -11,6 +12,7 @@ enum Consts {
   STRESS_3_SIZE = 100'000,
   STRESS_EQ_ASSERTIONS = false
 };
+}
 
 class FakeInt {
 public:
@@ -33,29 +35,29 @@ size_t FakeInt::id = 0;
 TEST(ObjectPool, CreateFakeInt) {
   ObjectPool test;
 
-  const auto first  = test.CreateObject<FakeInt>(Consts::FIRST_INT);
-  const auto second = test.CreateObject<FakeInt>(Consts::SECOND_INT);
-  ASSERT_EQ(static_cast<int>(*first), Consts::FIRST_INT);
-  ASSERT_EQ(static_cast<int>(*second), Consts::SECOND_INT);
+  const auto first  = test.CreateObject<FakeInt>(consts::FIRST_INT);
+  const auto second = test.CreateObject<FakeInt>(consts::SECOND_INT);
+  ASSERT_EQ(static_cast<int>(*first), consts::FIRST_INT);
+  ASSERT_EQ(static_cast<int>(*second), consts::SECOND_INT);
   EXPECT_EQ(first + 1, second);
 }
 
 
-inline void StressTest(int size) {
-  ObjectPool<100> pool;
+inline void stress_test(int size) {
+  ObjectPool pool;
   std::vector<FakeInt*> int_ptrs(size);
 
   for (int i = 0; i < size; ++i) {
     int_ptrs[i] = pool.CreateObject<FakeInt>(i);
   }
 
-  if constexpr (STRESS_EQ_ASSERTIONS) {
+  if constexpr (consts::STRESS_EQ_ASSERTIONS) {
     for (int i = 0; i < size; ++i) {
       ASSERT_EQ(static_cast<int>(*int_ptrs[i]), i);
     }
   }
 }
 
-TEST(ObjectPool, Stress1) { StressTest(STRESS_1_SIZE); }
-TEST(ObjectPool, Stress2) { StressTest(STRESS_2_SIZE); }
-TEST(ObjectPool, Stress3) { StressTest(STRESS_3_SIZE); }
+TEST(ObjectPool, Stress1) { stress_test(consts::STRESS_1_SIZE); }
+TEST(ObjectPool, Stress2) { stress_test(consts::STRESS_2_SIZE); }
+TEST(ObjectPool, Stress3) { stress_test(consts::STRESS_3_SIZE); }

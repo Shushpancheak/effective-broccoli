@@ -7,7 +7,7 @@
 
 #include <unordered_map>
 #include "Entity.hpp"
-#include "ObjectPool.hpp"
+#include "memory/ObjectPool.hpp"
 
 using EntityPtr = void*;
 
@@ -24,7 +24,7 @@ public:
 private:
   static size_t current_id_;
   std::unordered_map<size_t, EntityPtr> map_;
-  ObjectPool<> entity_pool_;
+  ObjectPool entity_pool_;
 };
 
 size_t EntityManager::current_id_ = 0;
