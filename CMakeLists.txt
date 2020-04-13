@@ -16,20 +16,25 @@ include_directories("include")
 
 set (
   SOURCES
-  src/Entity.cpp
-  src/ResourceManager.cpp
-  src/Component.cpp
-  src/TypeCounter.cpp
-  src/GraphicComponent.cpp
-  src/ComponentManager.cpp
-  src/EntityManager.cpp
-  src/ObjectPool.cpp
-  src/DataChunk.cpp
-  include/constants/error.cpp
-  include/support/result.cpp
-)
+        src/Entity.cpp
+        src/PhysicalComponent.cpp
+        src/QuadTree.cpp
+        src/ResourceManager.cpp
+        src/Component.cpp
+        src/TypeCounter.cpp
+        src/GraphicComponent.cpp
+        src/ComponentManager.cpp
+        src/EntityManager.cpp
+        src/ObjectPool.cpp
+        src/DataChunk.cpp
+        include/constants/error.cpp
+        include/support/result.cpp
+        )
 set (
   HEADERS
+  include/PhysicalComponent.hpp
+  include/PhysicalSystem.hpp
+  include/QuadTree.hpp
   include/Entity.hpp
   include/ResourceManager.hpp
   include/Component.hpp
@@ -62,7 +67,10 @@ include_directories(${gtest_SOURCE_DIR})
 # - - - - - - - - - - - - - - - - - TESTS - - - - - - - - - - - - - - - - - - -
 
 set(UNIT_TESTS_NAME "run-tests-${PROJECT_NAME}")
-set(UNIT_TESTS_FILE "test/test.cpp")
+set(UNIT_TESTS_FILE
+        "test/test.cpp"
+        "test/QuadTreeTest.cpp"
+)
 
 add_executable(${UNIT_TESTS_NAME} ${UNIT_TESTS_FILE} ${HEADERS} ${SOURCES})
 
