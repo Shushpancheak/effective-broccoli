@@ -1,11 +1,16 @@
 #include "Entity.hpp"
 #include "SFML/Graphics.hpp"
+#include "error.h"
+#include "ComponentManager.hpp"
+#include <iostream>
+
+
 
 int main() {
+  ComponentManager a;
   sf::RenderWindow window(sf::VideoMode(200, 200), "effective-brocolli");
   sf::CircleShape shape(100.f);
   shape.setFillColor(sf::Color::Green);
-
   while (window.isOpen()) {
     sf::Event event{};
 
