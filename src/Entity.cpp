@@ -1,28 +1,28 @@
 #include "Entity.hpp"
 
-Entity::Entity()
-  : id_(current_id_++)
+template <typename T>
+Entity<T>::Entity(size_t id)
+  : id_(id)
   , in_use_(true) {}
 
-Entity::Entity(const Entity& other)
-  : id_(current_id_++)
-  , in_use_(true) {}
-
-Entity::Entity(Entity&& other) noexcept
+template <typename T>
+Entity<T>::Entity(Entity<T>&& other) noexcept
   : id_(other.id_)
   , in_use_(true) {}
 
-Entity& Entity::operator=(const Entity& other) {
-  if (this == &other) {
-    return *this;
-  }
 
-  id_     = current_id_++;
-  in_use_ = true;
+template <typename T>
+Entity<T>& Entity<T>::operator=(Entity<T>&& other) noexcept {
+  id_ = other.id_;
   return *this;
 }
 
-Entity& Entity::operator=(Entity&& other) noexcept {
-  id_ = other.id_;
-  return *this;
+template<typename T>
+size_t Entity<T>::GetTypeID() {
+  return type_id;
+}
+
+template<typename T>
+size_t Entity<T>::GetEntityID() const {
+  return id_;
 }
