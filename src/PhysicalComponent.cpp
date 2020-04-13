@@ -1,8 +1,8 @@
 //
 // Created by dm on 3/23/20.
 //
-#include "PhysicalComponent.hpp"
-#include "PhysicalSystem.hpp"
+#include "components/PhysicalComponent.hpp"
+#include "systems/PhysicalSystem.hpp"
 
 PhysicalComponent::PhysicalComponent(sf::Rect<float> hitbox_, float mass_, int group):
  hitbox_(hitbox_),

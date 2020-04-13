@@ -3,7 +3,7 @@
 
 #include <unordered_map>
 #include <utility>
-#include "Component.hpp"
+#include "components/Component.hpp"
 #include "constants/error.hpp"
 #include "memory/ObjectPool.hpp"
 #include "support/typedefs.hpp"

@@ -1,7 +1,7 @@
 #ifndef EFFECTIVE_BROCOLLI_COMPONENT_HPP
 #define EFFECTIVE_BROCOLLI_COMPONENT_HPP
 
-#include "TypeCounter.hpp"
+#include "support/TypeCounter.hpp"
 
 template <class T>
 class Component {

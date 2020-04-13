@@ -1,4 +1,4 @@
-#include "ComponentManager.hpp"
+#include "managers/ComponentManager.hpp"
 
 
 Status ComponentManager::DeleteAllComponents(EntityID entity_id) {

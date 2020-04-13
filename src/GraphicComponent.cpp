@@ -1,1 +1,1 @@
-#include "GraphicComponent.hpp"
+#include "components/GraphicComponent.hpp"

@@ -5,9 +5,10 @@
 #ifndef EFFECTIVE_BROCOLLI_INCLUDE_QUADTREE_HPP_
 #define EFFECTIVE_BROCOLLI_INCLUDE_QUADTREE_HPP_
 #include <memory>
+#include <array>
 #include "SFML/Graphics/Rect.hpp"
-#include "PhysicalComponent.hpp"
-#include "PhysicalSystem.hpp"
+#include "components/PhysicalComponent.hpp"
+#include "systems/PhysicalSystem.hpp"
 
 enum class QuadIndex {UpperLeft = 0, UpperRight, DownLeft, DownRight};
 

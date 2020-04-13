@@ -5,7 +5,7 @@
 #ifndef EFFECTIVE_BROCOLLI__PHYSICALSYSTEM_HPP_
 #define EFFECTIVE_BROCOLLI__PHYSICALSYSTEM_HPP_
 #include "Entity.hpp"
-#include "PhysicalComponent.hpp"
+#include "components/PhysicalComponent.hpp"
 #include "QuadTree.hpp"
 // Group - bitmask? or register groups
 class PhysicalSystem {

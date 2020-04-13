@@ -1,7 +1,7 @@
 #include "Entity.hpp"
 #include "SFML/Graphics.hpp"
-#include "error.h"
-#include "ComponentManager.hpp"
+#include "constants/error.hpp"
+#include "managers/ComponentManager.hpp"
 #include <iostream>
 
 

@@ -1,13 +1,11 @@
 #ifndef EFFECTIVE_BROCOLLI_SYSTEM_HPP
 #define EFFECTIVE_BROCOLLI_SYSTEM_HPP
 
-#include "TypeCounter.hpp"
+#include "support/TypeCounter.hpp"
 
 template <typename T>
 class System {
 public:
-  virtual ~System() = 0;
-
   static const size_t type_id;
 
   static size_t GetTypeID()  {

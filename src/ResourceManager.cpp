@@ -1,4 +1,4 @@
-#include "ResourceManager.hpp"
+#include "managers/ResourceManager.hpp"
 
 ResourceManager* ResourceManager::resource_manager_= nullptr;
 
