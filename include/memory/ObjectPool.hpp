@@ -4,6 +4,7 @@
 #include "constants/error.hpp"
 #include "support/IntrusiveList.hpp"
 #include "memory/DataChunk.hpp"
+#include "support/result.hpp"
 
 class ObjectPool {
   using Chunk = DataChunk;
@@ -30,7 +31,7 @@ public:
    * @return pointer to created object. Returns nullptr on failure.
    */
   template<typename T, typename... Args>
-  T* CreateObject(Args&&... args);
+  Result<T*> CreateObject(Args&&... args);
 
   /**
    * Calls a destructor on object pointed to by obj_ptr and nullifies it.
@@ -56,10 +57,10 @@ private:
 };
 
 template<typename T, typename ... Args>
-T* ObjectPool::CreateObject(Args&&... args) {
+Result<T*> ObjectPool::CreateObject(Args&&... args) {
   for (auto& chunk : chunks_) {
     if (chunk.GetTypeID() == T::GetTypeID() && !chunk.IsFull()) {
-      T* res_ptr = chunk.Add<T>(std::forward<Args>(args)...);
+      auto res_ptr = chunk.Add<T>(std::forward<Args>(args)...);
       if (res_ptr != nullptr) {
         return res_ptr;
       }
@@ -76,8 +77,7 @@ template<typename T>
 Status ObjectPool::DeleteObject(T* obj_ptr) {
   for (auto& chunk : chunks_) {
     if (chunk.GetPresentStatus(obj_ptr).IsOk()) {
-      chunk.Delete<T>(obj_ptr);
-      return make_result::Ok();
+      return chunk.Delete<T>(obj_ptr);
     }
   }
 

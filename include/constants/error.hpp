@@ -16,7 +16,8 @@ enum ErrorCode : int {
   OBJECT_NOT_PRESENT,
   NOT_FOUND,
   ALLOC_FAILED,
-  LOAD_ERROR
+  LOAD_ERROR,
+  IS_FULL
 };
 template <>
 struct std::is_error_code_enum<ErrorCode > : true_type {};

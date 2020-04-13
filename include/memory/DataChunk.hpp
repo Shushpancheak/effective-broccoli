@@ -32,10 +32,11 @@ public:
   /**
    * Emplaces the object with given args.
    *
-   * @return Address of constructed object; nullptr on failure.
+   * @return Address of constructed object;
+   * IS_FULL - chunk is already full.
    */
   template<typename T, typename... Args>
-  T* Add(Args&&... args);
+  Result<T*> Add(Args&&... args);
 
   /**
    * Deletes the object pointed to by item_ptr, not using any destructor.
@@ -150,7 +151,7 @@ private:
   #define OP_ASSERT_IN_BUFFER_RANGE(ptr) \
     assert(reinterpret_cast<char*>(ptr) >= buffer_start_ && \
            reinterpret_cast<char*>(ptr) <  buffer_end_)
-#define OP_ASSERT_IN_BUFFER_RANGE_END_INCLUDED(ptr) \
+  #define OP_ASSERT_IN_BUFFER_RANGE_END_INCLUDED(ptr) \
     assert(reinterpret_cast<char*>(ptr) >= buffer_start_ && \
            reinterpret_cast<char*>(ptr) <= buffer_end_)
   #define OP_ASSERT_ADDRESS_ALIGNED(ptr) \
@@ -172,9 +173,9 @@ private:
 };
 
 template<typename T, typename ... Args>
-T* DataChunk::Add(Args&&... args) {
+Result<T*> DataChunk::Add(Args&&... args) {
   if (this->IsFull()) {
-    return nullptr;
+    return make_result::Fail(IS_FULL);
   }
 
   void* available_ptr = GetAvailable();
@@ -207,7 +208,7 @@ Status DataChunk::Delete(T* item_ptr) {
 template<typename T>
 void DataChunk::DeleteAll() {
   for (size_t i = 0; i < object_count_; ++i) {
-    DeleteIfPresent(buffer_start_ + i);
+    auto res = DeleteIfPresent(buffer_start_ + i);
   }
 }
 
