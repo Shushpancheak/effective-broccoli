@@ -13,7 +13,7 @@ namespace { // anonymous namespace
 
     std::string ErrorCategory::message(int ev) const
     {
-      switch (static_cast<ErrorCode>(ev))
+      switch (ev)
       {
         case ErrorCode::FALSE_TYPE:
           return "Types don't match.";
@@ -38,6 +38,9 @@ namespace { // anonymous namespace
 
         case ErrorCode::BAD_PTR:
           return "Invalid pointer.";
+
+        case ErrorCode::LOAD_ERROR:
+          return "Unable to load from given file.";
 
         default:
           return "Unknown error.";

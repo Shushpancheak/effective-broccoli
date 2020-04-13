@@ -13,17 +13,17 @@ ResourceManager::ResourceManager() {
   std::ifstream infile("resources/essentials.txt");
   std::string line;
   while (std::getline(infile, line)) {
-    Load(line);
+    (void)Load(line);
   }
 }
 
-int ResourceManager::Load(const std::string& path) {
+Status ResourceManager::Load(const std::string& path) {
   sf::Texture texture;
   if (!texture.loadFromFile(path)) {
-    return 1;
+    return make_result::Fail(LOAD_ERROR);
   }
   map_[path] = texture;
-  return 0;
+  return make_result::Ok();
 }
 
 sf::Texture& ResourceManager::Get(const std::string& path) {

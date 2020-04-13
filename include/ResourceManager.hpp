@@ -7,6 +7,9 @@
 #include <sstream>
 #include <SFML/Graphics.hpp>
 
+#include "constants/error.hpp"
+#include "support/result.hpp"
+
 class ResourceManager {
 private:
   ResourceManager();
@@ -21,7 +24,7 @@ public:
   /**
    * Load texture into the memory
    */
-  int Load(const std::string& path);
+  Status Load(const std::string& path);
 
   /**
    * Get previously loaded texture

@@ -7,7 +7,7 @@ if (res.HasError()) {\
   return res; \
 }
 
-enum ErrorCode {
+enum ErrorCode : int {
   FALSE_TYPE = 1,
   CTOR_FAILED,
   BAD_PTR,
@@ -15,7 +15,8 @@ enum ErrorCode {
   OUT_OF_BOUNDS,
   OBJECT_NOT_PRESENT,
   NOT_FOUND,
-  ALLOC_FAILED
+  ALLOC_FAILED,
+  LOAD_ERROR
 };
 template <>
 struct std::is_error_code_enum<ErrorCode > : true_type {};
