@@ -11,7 +11,6 @@
 #include "support/result.hpp"
 
 
-
 class SystemManager {
   using SystemPtr = void*;
 public:
@@ -66,7 +65,7 @@ Result<T*> SystemManager::GetSystem() {
   if (map_.count(T::GetTypeID()) == 0) {
     return make_result::Fail(NOT_FOUND);
   }
-  return make_result::Ok((T*)map_[T::GetTypeID()]);
+  return make_result::Ok(static_cast<T*>(map_[T::GetTypeID()]));
 }
 
 #endif //EFFECTIVE_BROCOLLI_SYSTEMMANAGER_HPP

@@ -7,10 +7,11 @@
 #include "support/result.hpp"
 
 class ObjectPool {
+  const size_t DEFAULT_CHUNK_OBJECT_COUNT = 100;
   using Chunk = DataChunk;
 
 public:
-  ObjectPool() = default;
+  ObjectPool();
   ~ObjectPool();
 
   ObjectPool(const ObjectPool&  other) = delete;
@@ -52,9 +53,23 @@ public:
    */
   Status Free(void* data_ptr);
 
+  /**
+   * Set number of objects in following chunks.
+   */
+  void SetObjectCountInChunk(size_t count);
+
 private:
   IntrusiveList<DataChunk> chunks_;
+  size_t cur_chunks_obj_count_;
 };
+
+inline ObjectPool::ObjectPool()
+  : chunks_()
+  , cur_chunks_obj_count_(DEFAULT_CHUNK_OBJECT_COUNT) {}
+
+inline void ObjectPool::SetObjectCountInChunk(size_t count) {
+  cur_chunks_obj_count_ = count;
+}
 
 template<typename T, typename ... Args>
 Result<T*> ObjectPool::CreateObject(Args&&... args) {
@@ -67,7 +82,7 @@ Result<T*> ObjectPool::CreateObject(Args&&... args) {
     }
   }
 
-  Chunk* new_chunk = new Chunk(sizeof(T), T::GetTypeID());
+  Chunk* new_chunk = new Chunk(sizeof(T), T::GetTypeID(), cur_chunks_obj_count_);
 
   chunks_.PushFront(new_chunk);
   return chunks_.begin()->Add<T>(std::forward<Args>(args)...);

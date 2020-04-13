@@ -6,6 +6,8 @@
 template <typename T>
 class System {
 public:
+  virtual ~System() = 0;
+
   static const size_t type_id;
 
   static size_t GetTypeID()  {

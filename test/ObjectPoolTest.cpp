@@ -35,8 +35,8 @@ size_t FakeInt::id = 0;
 TEST(ObjectPool, CreateFakeInt) {
   ObjectPool test;
 
-  const auto first  = test.CreateObject<FakeInt>(FakeInt(7));
-  const auto second = test.CreateObject<FakeInt>(consts::SECOND_INT);
+  const FakeInt* first  = test.CreateObject<FakeInt>(FakeInt(7));
+  const FakeInt* second = test.CreateObject<FakeInt>(consts::SECOND_INT);
   ASSERT_EQ(static_cast<int>(*first), consts::FIRST_INT);
   ASSERT_EQ(static_cast<int>(*second), consts::SECOND_INT);
   EXPECT_EQ(first + 1, second);
