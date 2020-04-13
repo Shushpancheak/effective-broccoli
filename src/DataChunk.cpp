@@ -9,8 +9,8 @@ DataChunk::DataChunk(
   , type_id_(type_id)
   , size_(0) {
   buffer_start_ = new char[object_size * object_count_];
-  Free(buffer_start_, object_count_);
   buffer_end_ = buffer_start_ + (object_count_ + 1) * object_size_;
+  Free(buffer_start_, object_count_);
 }
 
 DataChunk::~DataChunk() {
