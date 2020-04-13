@@ -8,5 +8,6 @@
 using TypeID      = size_t;
 using EntityID    = size_t;
 using ComponentID = size_t;
+using SystemID    = size_t;
 
 #endif

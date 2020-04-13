@@ -2,6 +2,7 @@ submodules/sfml-compiled/
 CMakeSettings.json
 Folder.DotSettings
 cmake-build-debug
+cmake-build-debug-test
 
 ###############################################################################
 ## Ignore Visual Studio temporary files, build results, and

@@ -29,6 +29,7 @@ set (
         src/DataChunk.cpp
         include/constants/error.cpp
         include/support/result.cpp
+        src/SystemManager.cpp
         )
 set (
   HEADERS
@@ -36,6 +37,8 @@ set (
   include/PhysicalSystem.hpp
   include/QuadTree.hpp
   include/Entity.hpp
+  include/System.hpp
+  include/SystemManager.hpp
   include/ResourceManager.hpp
   include/Component.hpp
   include/TypeCounter.hpp

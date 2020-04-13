@@ -35,10 +35,24 @@ Result<size_t> EntityManager::AddEntity(Args&&... args) {
   auto entity_id = EntityManager::current_id_++;
   T* ptr = entity_pool_.CreateObject<T>(entity_id, std::forward<Args>(args)...);
   if (!ptr) {
-    return ALLOC_FAILED;
+    return make_result::Fail(ALLOC_FAILED);
   }
   map_[entity_id] = ptr;
   return make_result::Ok(entity_id);
+}
+
+template<typename T>
+Status EntityManager::DeleteEntity(const size_t entity_id) {
+  if (map_.count(entity_id) == 0) {
+    return make_result::Fail(NOT_FOUND);
+  }
+
+  const auto target = map_[entity_id];
+  auto res = entity_pool_.DeleteObject<T>(target);
+  CHECK_ERROR(res);
+  map_.erase(entity_id);
+
+  return make_result::Ok();
 }
 
 
