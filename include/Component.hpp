@@ -16,6 +16,9 @@ public:
     return entity_id_;
   }
 
+  void operator delete(void*) = delete;
+  void operator delete[](void*) = delete;
+
 protected:
   size_t entity_id_ = 0;
 };

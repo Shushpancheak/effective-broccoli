@@ -26,6 +26,9 @@ public:
 
   size_t GetEntityID() const;
 
+  void operator delete(void*) = delete;
+  void operator delete[](void*) = delete;
+
 private:
   size_t id_;
 

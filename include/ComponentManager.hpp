@@ -4,9 +4,10 @@
 #include <unordered_map>
 #include <utility>
 #include "Component.hpp"
-#include "constants/error_codes.hpp"
+#include "constants/error.hpp"
 #include "memory/ObjectPool.hpp"
 #include "support/typedefs.hpp"
+#include "support/result.hpp"
 
 class ComponentManager {
   using ComponentPtr = void*;
@@ -16,52 +17,55 @@ public:
    * @return component pointer if component exists, nullptr otherwise.
    */
   template<typename T>
-  T* GetComponent(EntityID entity_id);
+  Result<T*> GetComponent(EntityID entity_id);
 
   /**
    * @return ALLOC_FAILED if object pool is full.
    */
   template<typename T, typename ...Args>
-  int AddComponent(EntityID entity_id, Args&&... args);
+  Status AddComponent(EntityID entity_id, Args&&... args);
 
   /**
   * @return NOT_FOUND if value does not exist.
   */
   template<typename T>
-  int DeleteComponent(EntityID entity_id);
+  Status DeleteComponent(EntityID entity_id);
 
-  int DeleteAllComponents(EntityID entity_id);
+  Status DeleteAllComponents(EntityID entity_id);
 private:
   ObjectPool component_pool_;
   std::unordered_map<EntityID, std::unordered_map<ComponentID, ComponentPtr>> map_;
 };
 
 template<typename T, typename ...Args>
-int ComponentManager::AddComponent(const EntityID entity_id, Args&&... args) {
+Status ComponentManager::AddComponent(const EntityID entity_id, Args&&... args) {
   T* ptr = component_pool_.CreateObject<T>(std::forward(args)...);
   if (!ptr) {
-    return ALLOC_FAILED;
+    return make_result::Fail(ALLOC_FAILED);
   }
   map_[entity_id][T::GetTypeID()] = ptr;
-  return NO_ERROR;
+  return make_result::Ok();
 }
 
 template<typename T>
-int ComponentManager::DeleteComponent(EntityID entity_id) {
+Status ComponentManager::DeleteComponent(EntityID entity_id) {
   if (map_[entity_id].count(T::GetTypeID()) == 0) {
-    return NOT_FOUND;
+    return make_result::Fail(NOT_FOUND);
   }
-  component_pool_.DeleteObject<T>(map_[entity_id][T::GetTypeID()] );
+  auto res = component_pool_.DeleteObject<T>(map_[entity_id][T::GetTypeID()] );
+  if (res.HasError()) {
+    return res;
+  }
   map_[entity_id].erase(T::GetTypeID());
-  return NO_ERROR;
+  return make_result::Ok();
 }
 
 template<typename T>
-T *ComponentManager::GetComponent(EntityID entity_id) {
+Result<T*> ComponentManager::GetComponent(EntityID entity_id) {
   if (map_[entity_id].count(T::GetTypeID()) == 0) {
-    return nullptr;
+    return make_result::Fail(NOT_FOUND);
   }
-  return map_[entity_id][T::GetTypeID()];
+  return make_result::Ok((T*)map_[entity_id][T::GetTypeID()]);
 }
 
 #endif //EFFECTIVE_BROCOLLI_COMPONENTMANAGER_HPP

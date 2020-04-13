@@ -4,7 +4,8 @@
 #include <utility>
 #include <cassert>
 #include "support/IntrusiveList.hpp"
-#include "constants/error_codes.hpp"
+#include "constants/error.hpp"
+#include "support/result.hpp"
 
 /**
  * Chunk of objects of certain type, that is decided at runtime.
@@ -48,13 +49,13 @@ public:
    * Deletes the object pointed to by item_ptr, using T's destructor.
    */
   template<typename T>
-  int Delete(T* item_ptr);
+  Status Delete(T* item_ptr);
 
   /**
    * Deletes count objects of type T, starting from item_ptr, using T's destructor.
    */
   template<typename T>
-  int Delete(T* item_ptr, size_t count);
+  Status Delete(T* item_ptr, size_t count);
 
   /**
    * Deletes the object pointed to by item_ptr, using T's destructor,
@@ -63,7 +64,7 @@ public:
    * @return ALREADY_DELETED if the address is not occupied.
    */
   template<typename T>
-  int DeleteIfPresent(T* item_ptr);
+  Status DeleteIfPresent(T* item_ptr);
 
   /**
    * Deletes objects starting from item_ptr, using T's destructor,
@@ -72,7 +73,7 @@ public:
    * @return ALREADY_DELETED if the address is not occupied.
    */
   template<typename T>
-  int DeleteIfPresent(T* item_ptr, size_t count);
+  Status DeleteIfPresent(T* item_ptr, size_t count);
 
   /**
    * Deletes all objects in DataChunk, skipping uninitialized components,
@@ -88,7 +89,7 @@ public:
    * OBJECT_NOT_PRESENT - There is no object in address.
    */
   template<typename T>
-  int GetPresentStatus(T* item_ptr);
+  Status GetPresentStatus(T* item_ptr);
 
   /**
    * @return does DataChunk has no objects.
@@ -191,7 +192,7 @@ T* DataChunk::Add(Args&&... args) {
 }
 
 template<typename T>
-int DataChunk::Delete(T* item_ptr) {
+Status DataChunk::Delete(T* item_ptr) {
   assert(!IsEmpty());
   OP_ASSERT_IN_BUFFER_RANGE(item_ptr);
 
@@ -200,7 +201,7 @@ int DataChunk::Delete(T* item_ptr) {
 
   --size_;
 
-  return NO_ERROR;
+  return make_result::Ok();
 }
 
 template<typename T>
@@ -211,52 +212,52 @@ void DataChunk::DeleteAll() {
 }
 
 template<typename T>
-int DataChunk::GetPresentStatus(T* item_ptr) {
+Status DataChunk::GetPresentStatus(T* item_ptr) {
   if (item_ptr < buffer_start_ || item_ptr > buffer_start_ + object_count_ * object_size_) {
-    return OUT_OF_BOUNDS;
+    return make_result::Fail(OUT_OF_BOUNDS);
   }
 
   if (IsAvailable(item_ptr)) {
-    return OBJECT_NOT_PRESENT;
+    return make_result::Fail(OBJECT_NOT_PRESENT);
   }
   else {
-    return NO_ERROR;
+    return make_result::Ok();
   }
 }
 
 template<typename T>
-int DataChunk::Delete(T* item_ptr, size_t count) {
+Status DataChunk::Delete(T* item_ptr, size_t count) {
   for (size_t i = 0; i < count; ++i) {
-    const int res = Delete(item_ptr + i);
+    auto res = Delete(item_ptr + i);
 
-    if (res != NO_ERROR) {
+    if (res.HasError()) {
       return res;
     }
   }
 
-  return NO_ERROR;
+  return make_result::Ok();
 }
 
 template<typename T>
-int DataChunk::DeleteIfPresent(T* item_ptr) {
+Status DataChunk::DeleteIfPresent(T* item_ptr) {
   if (IsAvailable(item_ptr)) {
-    return ALREADY_DELETED;
+    return make_result::Fail(ALREADY_DELETED);
   }
 
   return Delete(item_ptr);
 }
 
 template<typename T>
-int DataChunk::DeleteIfPresent(T* item_ptr, size_t count) {
+Status DataChunk::DeleteIfPresent(T* item_ptr, size_t count) {
   for (size_t i = 0; i < count; ++i) {
-    const int res = DeleteIfPresent(item_ptr + i);
+    auto res = DeleteIfPresent(item_ptr + i);
 
-    if (res != NO_ERROR) {
+    if (res.HasError()) {
       return res;
     }
   }
 
-  return NO_ERROR;
+  return make_result::Ok();
 }
 
 template<typename T, typename ... Args>

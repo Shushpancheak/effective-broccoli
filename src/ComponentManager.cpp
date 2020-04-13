@@ -1,10 +1,13 @@
 #include "ComponentManager.hpp"
 
 
-int ComponentManager::DeleteAllComponents(EntityID entity_id) {
+Status ComponentManager::DeleteAllComponents(EntityID entity_id) {
   for (auto& it : map_[entity_id]) {
-    component_pool_.Free(it.second);
+    auto res = component_pool_.Free(it.second);
+    if (res.HasError()) {
+      return res;
+    }
   }
   map_.erase(entity_id);
-  return NO_ERROR;
+  return make_result::Ok();
 }

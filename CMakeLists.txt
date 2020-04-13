@@ -25,6 +25,8 @@ set (
   src/EntityManager.cpp
   src/ObjectPool.cpp
   src/DataChunk.cpp
+  include/constants/error.cpp
+  include/support/result.cpp
 )
 set (
   HEADERS
@@ -37,6 +39,8 @@ set (
   include/EntityManager.hpp
   include/memory/ObjectPool.hpp
   include/memory/DataChunk.hpp
+  include/constants/error.hpp
+  include/support/result.hpp
 )
 
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES} src/main.cpp)

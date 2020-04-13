@@ -1,7 +1,7 @@
 #ifndef EFFECTIVE_BROCOLLI_OBJECT_POOL
 #define EFFECTIVE_BROCOLLI_OBJECT_POOL
 
-#include "constants/error_codes.hpp"
+#include "constants/error.hpp"
 #include "support/IntrusiveList.hpp"
 #include "memory/DataChunk.hpp"
 
@@ -39,7 +39,7 @@ public:
    * NOT_FOUND - object pointed to by obj_ptr is not present in any of chunks.
    */
   template<typename T>
-  int DeleteObject(T* obj_ptr);
+  Status DeleteObject(T* obj_ptr);
 
   /**
    * As opposed to DeleteObject<T>, does not call a destructor, but simply
@@ -49,7 +49,7 @@ public:
    * @returb Error Codes:
    * NOT_FOUND - data pointed to by data_ptr is not found in any of chunks.
    */
-  int Free(void* data_ptr);
+  Status Free(void* data_ptr);
 
 private:
   IntrusiveList<DataChunk> chunks_;
@@ -73,15 +73,15 @@ T* ObjectPool::CreateObject(Args&&... args) {
 }
 
 template<typename T>
-int ObjectPool::DeleteObject(T* obj_ptr) {
+Status ObjectPool::DeleteObject(T* obj_ptr) {
   for (auto& chunk : chunks_) {
-    if (chunk.GetPresentStatus(obj_ptr) == NO_ERROR) {
+    if (chunk.GetPresentStatus(obj_ptr).IsOk()) {
       chunk.Delete<T>(obj_ptr);
-      return NO_ERROR;
+      return make_result::Ok();
     }
   }
 
-  return NOT_FOUND;
+  return make_result::Fail(NOT_FOUND);
 }
 
 #endif // EFFECTIVE_BROCOLLI_OBJECT_POOL

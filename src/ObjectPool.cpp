@@ -7,13 +7,13 @@ ObjectPool::~ObjectPool() {
   }
 }
 
-int ObjectPool::Free(void* data_ptr) {
+Status ObjectPool::Free(void* data_ptr) {
   for (auto& chunk : chunks_) {
-    if (chunk.GetPresentStatus(data_ptr) == NO_ERROR) {
+    if (chunk.GetPresentStatus(data_ptr).IsOk()) {
       chunk.HardDelete(data_ptr);
-      return NO_ERROR;
+      return make_result::Ok();
     }
   }
 
-  return NOT_FOUND;
+  return make_result::Fail(NOT_FOUND);
 }

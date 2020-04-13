@@ -8,18 +8,19 @@
 #include <unordered_map>
 #include "Entity.hpp"
 #include "memory/ObjectPool.hpp"
+#include "support/result.hpp"
 
 using EntityPtr = void*;
 
 class EntityManager {
 public:
-  EntityPtr GetEntity(size_t entity_id);
-  int       DeletePodEntity(size_t entity_id);
+  Result<EntityPtr> GetEntity(size_t entity_id);
+  Status            DeletePodEntity(size_t entity_id);
   template<typename T>
-  int       DeleteEntity(size_t entity_id);
+  Status            DeleteEntity(size_t entity_id);
 
   template<typename T, typename... Args>
-  int       AddEntity(Args&&... args);
+  Result<size_t>    AddEntity(Args&&... args);
 
 private:
   static size_t current_id_;
@@ -30,14 +31,14 @@ private:
 size_t EntityManager::current_id_ = 0;
 
 template<typename T, typename... Args>
-int EntityManager::AddEntity(Args&&... args) {
+Result<size_t> EntityManager::AddEntity(Args&&... args) {
   auto entity_id = EntityManager::current_id_++;
   T* ptr = entity_pool_.CreateObject<T>(entity_id, std::forward<Args>(args)...);
   if (!ptr) {
     return ALLOC_FAILED;
   }
   map_[entity_id] = ptr;
-  return NO_ERROR;
+  return make_result::Ok(entity_id);
 }
 
 
