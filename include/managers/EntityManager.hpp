@@ -9,6 +9,7 @@
 #include "Entity.hpp"
 #include "memory/ObjectPool.hpp"
 #include "support/result.hpp"
+#include "support/typedefs.hpp"
 
 using EntityPtr = void*;
 
@@ -20,7 +21,7 @@ public:
   Status            DeleteEntity(size_t entity_id);
 
   template<typename T, typename... Args>
-  Result<size_t>    AddEntity(Args&&... args);
+  Result<EntityID>  AddEntity(Args&&... args);
 
 private:
   static size_t current_id_;
@@ -31,7 +32,7 @@ private:
 size_t EntityManager::current_id_ = 0;
 
 template<typename T, typename... Args>
-Result<size_t> EntityManager::AddEntity(Args&&... args) {
+Result<EntityID> EntityManager::AddEntity(Args&&... args) {
   auto entity_id = EntityManager::current_id_++;
   T* ptr = entity_pool_.CreateObject<T>(entity_id, std::forward<Args>(args)...);
   if (!ptr) {

@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include "memory/ObjectPool.hpp"
-#include "Component.hpp"
+#include "components/Component.hpp"
 
 namespace consts {
 enum {

@@ -5,12 +5,13 @@
 #include <iostream>
 
 
-
 int main() {
   ComponentManager a;
   sf::RenderWindow window(sf::VideoMode(200, 200), "effective-brocolli");
+
   sf::CircleShape shape(100.f);
   shape.setFillColor(sf::Color::Green);
+
   while (window.isOpen()) {
     sf::Event event{};
 

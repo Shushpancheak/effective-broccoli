@@ -45,6 +45,9 @@ namespace { // anonymous namespace
       case ErrorCode::IS_FULL:
         return "Container overflow.";
 
+      case ErrorCode::SUBSCRIPTION_NOT_FOUND:
+        return "Subscription not found.";
+
       default:
         return "Unknown error.";
     }

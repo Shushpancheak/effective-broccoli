@@ -2,6 +2,7 @@
 #include "gtest/gtest.h"
 #include "ObjectPoolTest.cpp"
 #include "ErrorTest.cpp"
+#include "QuadTreeTest.cpp"
 
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);

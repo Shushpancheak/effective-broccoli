@@ -2,13 +2,14 @@
 #define EFFECTIVE_BROCOLLI_SYSTEM_HPP
 
 #include "support/TypeCounter.hpp"
+#include "systems/ISystem.hpp"
 
 template <typename T>
-class System {
+class System : public ISystem {
 public:
-  static const size_t type_id;
+  static const TypeID type_id;
 
-  static size_t GetTypeID()  {
+  static TypeID GetTypeID()  {
     return type_id;
   }
 
@@ -17,6 +18,6 @@ public:
 };
 
 template <typename T>
-const size_t System<T>::type_id = TypeCounter::GetId<T>();
+const TypeID System<T>::type_id = TypeCounter::GetId<T>();
 
 #endif //EFFECTIVE_BROCOLLI_SYSTEM_HPP

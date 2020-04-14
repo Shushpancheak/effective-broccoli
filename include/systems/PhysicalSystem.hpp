@@ -7,13 +7,18 @@
 #include "Entity.hpp"
 #include "components/PhysicalComponent.hpp"
 #include "QuadTree.hpp"
+#include "System.hpp"
+
 // Group - bitmask? or register groups
-class PhysicalSystem {
+class PhysicalSystem : public System<PhysicalSystem> {
  public:
   int AddEntity(PhysicalComponent *component, int group);
   int DeleteEntity(PhysicalComponent *component, int group);
   static PhysicalSystem* GetInstance();
   void Update();
+
+  virtual void Accept(EventPtr event_ptr, EventID event_id) override;
+
  private:
   PhysicalSystem();
 
