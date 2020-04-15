@@ -76,7 +76,7 @@ Result<T*> ObjectPool::CreateObject(Args&&... args) {
   for (auto& chunk : chunks_) {
     if (chunk.GetTypeID() == T::GetTypeID() && !chunk.IsFull()) {
       auto res_ptr = chunk.Add<T>(std::forward<Args>(args)...);
-      if (res_ptr != nullptr) {
+      if (res_ptr.Value() != nullptr) {
         return res_ptr;
       }
     }

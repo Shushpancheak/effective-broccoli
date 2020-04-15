@@ -1,4 +1,4 @@
-#include "Entity.hpp"
+/*#include "Entity.hpp"
 #include "SFML/Graphics.hpp"
 #include "constants/error.hpp"
 #include "managers/ComponentManager.hpp"
@@ -31,4 +31,11 @@ int main() {
   }
 
   return 0;
+}*/
+#include "SFML/Graphics.hpp"
+#include <iostream>
+#include "support/QuadTree.hpp"
+
+int main() {
+
 }

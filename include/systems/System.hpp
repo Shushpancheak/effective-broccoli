@@ -13,8 +13,8 @@ public:
     return type_id;
   }
 
-  void operator delete(void*) = delete;
-  void operator delete[](void*) = delete;
+  //void operator delete(void*) = delete;
+  //void operator delete[](void*) = delete;
 };
 
 template <typename T>

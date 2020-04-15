@@ -18,7 +18,6 @@ set (
   SOURCES
         src/Entity.cpp
         src/PhysicalComponent.cpp
-        src/QuadTree.cpp
         src/ResourceManager.cpp
         src/Component.cpp
         src/TypeCounter.cpp
@@ -33,18 +32,18 @@ set (
         )
 set (
   HEADERS
-  include/PhysicalComponent.hpp
-  include/PhysicalSystem.hpp
-  include/QuadTree.hpp
+  include/components/PhysicalComponent.hpp
+  include/systems/PhysicalSystem.hpp
+        include/support/QuadTree.hpp
   include/Entity.hpp
-  include/System.hpp
-  include/SystemManager.hpp
-  include/ResourceManager.hpp
-  include/Component.hpp
-  include/TypeCounter.hpp
-  include/GraphicComponent.hpp
-  include/ComponentManager.hpp
-  include/EntityManager.hpp
+  include/systems/System.hpp
+  include/managers/SystemManager.hpp
+  include/managers/ResourceManager.hpp
+  include/components/Component.hpp
+  include/support/TypeCounter.hpp
+  include/components/GraphicComponent.hpp
+  include/managers/ComponentManager.hpp
+  include/managers/EntityManager.hpp
   include/memory/ObjectPool.hpp
   include/memory/DataChunk.hpp
   include/constants/error.hpp
@@ -72,7 +71,6 @@ include_directories(${gtest_SOURCE_DIR})
 set(UNIT_TESTS_NAME "run-tests-${PROJECT_NAME}")
 set(UNIT_TESTS_FILE
         "test/test.cpp"
-        "test/QuadTreeTest.cpp"
 )
 
 add_executable(${UNIT_TESTS_NAME} ${UNIT_TESTS_FILE} ${HEADERS} ${SOURCES})

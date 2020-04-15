@@ -6,7 +6,7 @@
 #include <cstddef>
 #endif
 
-#include "TypeCounter.hpp"
+#include "support/TypeCounter.hpp"
 
 template <typename T>
 class Entity  {
@@ -24,7 +24,7 @@ public:
   static const size_t type_id;
   static size_t GetTypeID();
 
-  size_t GetEntityID() const;
+  [[nodiscard]] size_t GetEntityID() const;
 
   void operator delete(void*) = delete;
   void operator delete[](void*) = delete;

@@ -6,7 +6,7 @@
 #define EFFECTIVE_BROCOLLI__PHYSICALSYSTEM_HPP_
 #include "Entity.hpp"
 #include "components/PhysicalComponent.hpp"
-#include "QuadTree.hpp"
+#include "support/QuadTree.hpp"
 #include "System.hpp"
 
 // Group - bitmask? or register groups
@@ -17,13 +17,13 @@ class PhysicalSystem : public System<PhysicalSystem> {
   static PhysicalSystem* GetInstance();
   void Update();
 
-  virtual void Accept(EventPtr event_ptr, EventID event_id) override;
+  void Accept(EventPtr event_ptr, EventID event_id) override;
 
  private:
   PhysicalSystem();
 
   static PhysicalSystem* ph_system_;
-  QuadTree static_objects_;
+  QuadTree<PhysicalComponent*> static_objects_;
 };
 
 #endif //EFFECTIVE_BROCOLLI__PHYSICALSYSTEM_HPP_
