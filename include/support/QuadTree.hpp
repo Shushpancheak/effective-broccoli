@@ -30,7 +30,7 @@ class QuadTree
 
  private:
   static constexpr size_t Threshold = 16;
-  static constexpr size_t MaxDepth = 8;
+  static constexpr size_t MaxDepth = 12;
   struct Element {
     T value;
     sf::FloatRect box;
@@ -82,7 +82,7 @@ sf::Rect<float> ComputeBoxByIndex(sf::Rect<float> parent_box, int index) {
 }
 
 int ComputeIndexByBox(const sf::FloatRect &outer_box, const sf::FloatRect &inner_box) {
-  if (inner_box.left < outer_box.left + outer_box.width / 2) {
+  if (inner_box.left + inner_box.width < outer_box.left + outer_box.width / 2) {
     if (inner_box.top + inner_box.height < outer_box.top + outer_box.height / 2)
       return (int) QuadIndex::UpperLeft;
     else if (inner_box.top >= outer_box.top + outer_box.height / 2)
@@ -223,7 +223,7 @@ void QuadTree<T>::erase(const sf::FloatRect &box, const T& value) {
 
 template <typename T>
 void QuadTree<T>::insert(const sf::FloatRect &box, const T& component) {
-  insert(mRoot, 0, box, Element(component, box));
+  insert(mRoot, 0, max_box_, Element(component, box));
 }
 
 #endif //EFFECTIVE_BROCOLLI_INCLUDE_QUADTREE_HPP_

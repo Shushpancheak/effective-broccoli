@@ -40,24 +40,29 @@ TEST(QuadTree, IntersectWithTwo) {
 }
 
 TEST(QuadTree, StressTest) {
-  const int max_coord = 1000;
-  QuadTree<int> tree(sf::FloatRect{0,0, max_coord + 1, max_coord + 1});
-
-  const int obj_count = 100;
-  std::vector<sf::FloatRect> rects;
-  for (int i = 0; i < obj_count; i++) {
-    int x_coord = rand() % max_coord;
-    int y_coord = rand() % max_coord;
-    rects.emplace_back(x_coord, y_coord, rand() % (max_coord - x_coord), rand() % (max_coord - y_coord));
-    tree.insert(rects.back(), i);
+  for (int it = 0; it < 1; it++) {
+    const int max_coord = 100;
+    QuadTree<int> tree(sf::FloatRect{0, 0, max_coord + 1, max_coord + 1});
+    srand(time(NULL));
+    const int obj_count = 100;
+    std::vector<sf::FloatRect> rects;
+    for (int i = 0; i < obj_count; i++) {
+      int x_coord = rand() % max_coord;
+      int y_coord = rand() % max_coord;
+      rects.emplace_back(x_coord, y_coord, rand() % (max_coord - x_coord), rand() % (max_coord - y_coord));
+      tree.insert(rects.back(), i);
+    }
+    auto intersections = tree.findAllIntersections();
+    size_t all_inter = 0;
+    for (int i = 0; i < obj_count; i++)
+      for (int j = i + 1; j < obj_count; j++) {
+        if (rects[i].intersects(rects[j])) {
+          if (std::find(std::begin(intersections), std::end(intersections), std::pair(i, j)) == std::end(intersections) &&
+              std::find(std::begin(intersections), std::end(intersections), std::pair(j, i)) == std::end(intersections)) {
+            std::cout << rects[i] << rects[j] << std::endl;
+            ASSERT_TRUE(false);
+          }
+        }
+      }
   }
-
-  size_t all_inter = 0;
-  for (const auto& f_ : rects)
-    for (const auto &s_ : rects)
-      all_inter += f_.intersects(s_);
-  all_inter -= obj_count;
-  all_inter /= 2;
-
-  ASSERT_EQ(tree.findAllIntersections().size(), all_inter);
 }
