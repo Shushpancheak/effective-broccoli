@@ -10,6 +10,10 @@
 
 enum class QuadIndex {UpperLeft = 0, UpperRight, DownLeft, DownRight};
 
+std::ostream& operator<<(std::ostream& stream, const sf::FloatRect &rect) {
+  return stream << "{ (" << rect.left << ", " << rect.top << "), (" << rect.left + rect.width << ", " << rect.top + rect.height << ") }\n";
+}
+
 template <typename T>
 class QuadTree
 {
@@ -18,9 +22,9 @@ class QuadTree
   QuadTree(const sf::Rect<float>& box) :
       max_box_(box), mRoot(new Node()){}
 
-  void insert(const sf::FloatRect &box, T* component);
+  void insert(const sf::FloatRect &box, const T& component);
 
-  void erase(const sf::FloatRect &box, T* value);
+  void erase(const sf::FloatRect &box, const T& value);
 
   auto findAllIntersections();
 
@@ -28,11 +32,11 @@ class QuadTree
   static constexpr size_t Threshold = 16;
   static constexpr size_t MaxDepth = 8;
   struct Element {
-    T* value;
+    T value;
     sf::FloatRect box;
     [[nodiscard]] sf::FloatRect getHitbox() const {return box;}
 
-    Element(T *value, const sf::FloatRect &box) : value(value), box(box) {}
+    Element(T value, const sf::FloatRect &box) : value(std::move(value)), box(box) {}
   };
   struct Node
   {
@@ -58,9 +62,9 @@ class QuadTree
 
   void erase(pNode node, pNode parent, sf::FloatRect box, const Element &value);
 
-  void findAllIntersections(pNode node, std::vector<std::pair<T*, T*> >& int_vector);
+  void findAllIntersections(pNode node, std::vector<std::pair<T, T> >& int_vector);
 
-  void findAllDescIntersections(QuadTree::pNode node, const Element &component, std::vector<std::pair<T*, T*> >& intersections);
+  void findAllDescIntersections(QuadTree::pNode node, const Element &component, std::vector<std::pair<T, T> >& intersections);
 
   };
 
@@ -177,7 +181,7 @@ void QuadTree<T>::erase(QuadTree::pNode node, QuadTree::pNode parent, sf::FloatR
 }
 
 template <typename T>
-void QuadTree<T>::findAllIntersections(QuadTree::pNode node, std::vector<std::pair<T*, T*> >& int_vector) {
+void QuadTree<T>::findAllIntersections(QuadTree::pNode node, std::vector<std::pair<T, T> >& int_vector) {
   int max_val = 0;
   for (auto& value : node->values) {
     for (int j = 0; j < max_val; j++)
@@ -196,7 +200,7 @@ void QuadTree<T>::findAllIntersections(QuadTree::pNode node, std::vector<std::pa
 }
 
 template <typename T>
-void QuadTree<T>::findAllDescIntersections(QuadTree::pNode node, const Element& component, std::vector<std::pair<T*, T*> >& intersections) {
+void QuadTree<T>::findAllDescIntersections(QuadTree::pNode node, const Element& component, std::vector<std::pair<T, T> >& intersections) {
   for (const auto& other : node->values)
     if (component.getHitbox().intersects(other.getHitbox()))
       intersections.emplace_back(component.value, other.value);
@@ -207,18 +211,18 @@ void QuadTree<T>::findAllDescIntersections(QuadTree::pNode node, const Element& 
 
 template <typename T>
 auto QuadTree<T>::findAllIntersections() {
-  std::vector<std::pair<T*, T*> > result;
+  std::vector<std::pair<T, T> > result;
   findAllIntersections(mRoot, result);
   return result;
 }
 
 template<typename T>
-void QuadTree<T>::erase(const sf::FloatRect &box, T *value) {
+void QuadTree<T>::erase(const sf::FloatRect &box, const T& value) {
   erase(mRoot, nullptr, max_box_, Element(value, box));
 }
 
 template <typename T>
-void QuadTree<T>::insert(const sf::FloatRect &box, T *component) {
+void QuadTree<T>::insert(const sf::FloatRect &box, const T& component) {
   insert(mRoot, 0, box, Element(component, box));
 }
 
