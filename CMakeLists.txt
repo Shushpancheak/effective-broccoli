@@ -12,39 +12,35 @@ project (
   DESCRIPTION ""
 )
 
-include_directories("include")
+include_directories(include)
 
 set (
   SOURCES
-        src/Entity.cpp
-        src/PhysicalComponent.cpp
-        src/QuadTree.cpp
-        src/ResourceManager.cpp
-        src/Component.cpp
-        src/TypeCounter.cpp
-        src/GraphicComponent.cpp
-        src/ComponentManager.cpp
-        src/EntityManager.cpp
-        src/ObjectPool.cpp
-        src/DataChunk.cpp
-        include/constants/error.cpp
-        include/support/result.cpp
-        src/SystemManager.cpp
-        )
+  
+  src/QuadTree.cpp
+  src/ResourceManager.cpp
+  src/GraphicComponent.cpp
+  src/ComponentManager.cpp
+  src/EntityManager.cpp
+  src/ObjectPool.cpp
+  src/DataChunk.cpp
+  include/constants/error.cpp
+  include/support/result.cpp
+  src/SystemManager.cpp
+)
 set (
   HEADERS
-  include/PhysicalComponent.hpp
-  include/PhysicalSystem.hpp
+  include/components/PhysicalComponent.hpp
+  include/systems/PhysicalSystem.hpp
   include/QuadTree.hpp
   include/Entity.hpp
-  include/System.hpp
-  include/SystemManager.hpp
-  include/ResourceManager.hpp
-  include/Component.hpp
-  include/TypeCounter.hpp
-  include/GraphicComponent.hpp
-  include/ComponentManager.hpp
-  include/EntityManager.hpp
+  include/systems/System.hpp
+  include/managers/SystemManager.hpp
+  include/managers/ResourceManager.hpp
+  include/components/Component.hpp
+  include/components/GraphicComponent.hpp
+  include/managers/ComponentManager.hpp
+  include/managers/EntityManager.hpp
   include/memory/ObjectPool.hpp
   include/memory/DataChunk.hpp
   include/constants/error.hpp

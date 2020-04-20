@@ -1,23 +1,25 @@
 #ifndef EFFECTIVE_BROCOLLI_SYSTEM_HPP
 #define EFFECTIVE_BROCOLLI_SYSTEM_HPP
 
-#include "support/TypeCounter.hpp"
-#include "systems/ISystem.hpp"
+#include "events/Event.hpp"
 
-template <typename T>
-class System : public ISystem {
+
+using EventPtr = Event*;
+class System {
 public:
-  static const TypeID type_id;
+  // static const TypeID type_id; -- add in children
 
-  static TypeID GetTypeID()  {
-    return type_id;
-  }
+  virtual ~System();
+  virtual void Accept(EventPtr event_ptr) = 0;
 
   void operator delete(void*) = delete;
   void operator delete[](void*) = delete;
 };
 
-template <typename T>
-const TypeID System<T>::type_id = TypeCounter::GetId<T>();
+enum {
+  SYSTEM_GRAPHICAL = 0,
+  SYSTEM_PHYSICAL,
+  SYSTEM_MAX
+};
 
 #endif //EFFECTIVE_BROCOLLI_SYSTEM_HPP

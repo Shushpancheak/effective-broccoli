@@ -6,6 +6,7 @@
 #include "memory/DataChunk.hpp"
 #include "support/result.hpp"
 
+//TODO template<MaxTypeId>
 class ObjectPool {
   const size_t DEFAULT_CHUNK_OBJECT_COUNT = 100;
   using Chunk = DataChunk;

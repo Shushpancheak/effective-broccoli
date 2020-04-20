@@ -11,25 +11,25 @@
 #include "support/result.hpp"
 #include "support/typedefs.hpp"
 
-using EntityPtr = void*;
+using EntityPtr = Entity*;
 
 class EntityManager {
 public:
-  Result<EntityPtr> GetEntity(size_t entity_id);
-  Status            DeletePodEntity(size_t entity_id);
+  Result<EntityPtr> GetEntity(EntityID entity_id);
+  Status            DeletePodEntity(EntityID entity_id);
   template<typename T>
-  Status            DeleteEntity(size_t entity_id);
+  Status            DeleteEntity(EntityID entity_id);
 
   template<typename T, typename... Args>
   Result<EntityID>  AddEntity(Args&&... args);
 
 private:
-  static size_t current_id_;
-  std::unordered_map<size_t, EntityPtr> map_;
+  static EntityID current_id_;
+  std::unordered_map<EntityID, EntityPtr> map_;
   ObjectPool entity_pool_;
 };
 
-size_t EntityManager::current_id_ = 0;
+EntityID EntityManager::current_id_ = 0;
 
 template<typename T, typename... Args>
 Result<EntityID> EntityManager::AddEntity(Args&&... args) {
@@ -43,7 +43,7 @@ Result<EntityID> EntityManager::AddEntity(Args&&... args) {
 }
 
 template<typename T>
-Status EntityManager::DeleteEntity(const size_t entity_id) {
+Status EntityManager::DeleteEntity(const EntityID entity_id) {
   if (map_.count(entity_id) == 0) {
     return make_result::Fail(NOT_FOUND);
   }

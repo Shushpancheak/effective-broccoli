@@ -3,7 +3,7 @@
 #include <system_error>
 
 #define CHECK_ERROR(res) \
-if (res.HasError()) {\
+if ((res).HasError()) {\
   return res; \
 }
 
@@ -20,8 +20,9 @@ enum ErrorCode : int {
   IS_FULL,
   SUBSCRIPTION_NOT_FOUND
 };
+
 template <>
-struct std::is_error_code_enum<ErrorCode > : true_type {};
+struct std::is_error_code_enum<ErrorCode> : true_type {};
 
 std::error_code make_error_code(ErrorCode);
 

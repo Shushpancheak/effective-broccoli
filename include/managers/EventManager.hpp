@@ -11,7 +11,7 @@
 #include "managers/SystemManager.hpp"
 
 class EventManager {
-  using EventPtr = IEvent*;
+  using EventPtr = Event*;
 
 public:
   explicit EventManager(SystemManager* sys_manager_ptr);

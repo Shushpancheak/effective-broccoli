@@ -4,7 +4,9 @@
 #include "Component.hpp"
 #include "SFML/Graphics.hpp"
 
-struct GraphicComponent : Component<GraphicComponent> {
+struct GraphicComponent : public Component {
+  static const ComponentID type_id = COMPONENT_GRAPHICAL;
+
   float x = 0, y = 0;
   sf::Color color;
 };

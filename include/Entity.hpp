@@ -6,38 +6,30 @@
 #include <cstddef>
 #endif
 
-#include "TypeCounter.hpp"
+#include "support/typedefs.hpp"
 
-template <typename T>
 class Entity  {
 public:
-  explicit Entity(size_t);
+  // static const EntityID type_id; -- add in children.
 
-  Entity(const Entity& other) = delete;
-  Entity(Entity&& other) noexcept;
+  explicit Entity(const EntityID id)
+    : id_(id) {};
 
-  Entity& operator=(const Entity& other) = delete;
-  Entity& operator=(Entity&& other) noexcept;
+  //Entity(const Entity& other) = delete;
+  //Entity(Entity&& other) noexcept;
+  //
+  //Entity& operator=(const Entity& other) = delete;
+  //Entity& operator=(Entity&& other) noexcept;
 
   ~Entity() = default;
 
-  static const size_t type_id;
-  static size_t GetTypeID();
-
-  size_t GetEntityID() const;
+  EntityID GetEntityID() const { return id_; }
 
   void operator delete(void*) = delete;
   void operator delete[](void*) = delete;
 
 private:
-  size_t id_;
-
-  // For pooling
-  bool in_use_;
-  //TODO last time in use? delete it if it was too long ago.
+  EntityID id_;
 };
-
-template <typename T>
-const size_t Entity<T>::type_id = TypeCounter::GetId<T>();
 
 #endif // BROCOLLI_ENTITY

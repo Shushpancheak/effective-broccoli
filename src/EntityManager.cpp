@@ -1,7 +1,7 @@
 #include "managers/EntityManager.hpp"
 
 
-Result<EntityPtr> EntityManager::GetEntity(const size_t entity_id) {
+Result<EntityPtr> EntityManager::GetEntity(const EntityID entity_id) {
   if (map_.count(entity_id) == 0) {
     return make_result::Fail(NOT_FOUND);
   }
@@ -9,7 +9,7 @@ Result<EntityPtr> EntityManager::GetEntity(const size_t entity_id) {
   return make_result::Ok(map_[entity_id]);
 }
 
-Status EntityManager::DeletePodEntity(const size_t entity_id) {
+Status EntityManager::DeletePodEntity(const EntityID entity_id) {
   if (map_.count(entity_id) == 0) {
     return make_result::Fail(NOT_FOUND);
   }

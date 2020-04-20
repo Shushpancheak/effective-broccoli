@@ -10,7 +10,7 @@
 #include "support/result.hpp"
 
 class ComponentManager {
-  using ComponentPtr = void*;
+  using ComponentPtr = Component*;
 
 public:
   /**
@@ -48,7 +48,7 @@ Status ComponentManager::AddComponent(const EntityID entity_id, Args&&... args) 
 }
 
 template<typename T>
-Status ComponentManager::DeleteComponent(EntityID entity_id) {
+Status ComponentManager::DeleteComponent(const EntityID entity_id) {
   if (map_[entity_id].count(T::GetTypeID()) == 0) {
     return make_result::Fail(NOT_FOUND);
   }
@@ -61,11 +61,11 @@ Status ComponentManager::DeleteComponent(EntityID entity_id) {
 }
 
 template<typename T>
-Result<T*> ComponentManager::GetComponent(EntityID entity_id) {
+Result<T*> ComponentManager::GetComponent(const EntityID entity_id) {
   if (map_[entity_id].count(T::GetTypeID()) == 0) {
     return make_result::Fail(NOT_FOUND);
   }
-  return make_result::Ok((T*)map_[entity_id][T::GetTypeID()]);
+  return make_result::Ok(dynamic_cast<T*>(map_[entity_id][T::GetTypeID()]));
 }
 
 #endif //EFFECTIVE_BROCOLLI_COMPONENTMANAGER_HPP

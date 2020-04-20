@@ -6,14 +6,14 @@ EventManager::EventManager(SystemManager* sys_manager_ptr)
   , subscribed_systems_map_()
   , sys_manager_ptr_(sys_manager_ptr) {}
 
-void EventManager::RunFor(Duration duration) {
+void EventManager::RunFor(const Duration duration) {
   const StopWatch watch;
 
   while (!events_queue_.empty() && watch.Elapsed() < duration) {
     const auto event_ptr = events_queue_.front();
     events_queue_.pop();
 
-    const EventID event_id = event_ptr->event_id;
+    const EventID event_id = event_ptr->GetEventID();
     auto iter_pair = subscribed_systems_map_.equal_range(event_id);
     auto iter = iter_pair.first;
     auto end = iter_pair.second;
@@ -22,7 +22,7 @@ void EventManager::RunFor(Duration duration) {
 
       assert(system.IsOk());
 
-      system.ValueUnsafe()->Accept(event_ptr, event_id);
+      system.ValueUnsafe()->Accept(event_ptr);
     }
 
     auto res = events_pool_.Free(static_cast<void*>(event_ptr));

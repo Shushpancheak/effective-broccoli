@@ -1,16 +1,11 @@
 #ifndef EFFECTIVE_BROCOLLI_COMPONENT_HPP
 #define EFFECTIVE_BROCOLLI_COMPONENT_HPP
 
-#include "support/TypeCounter.hpp"
+#include "support/typedefs.hpp"
 
-template <class T>
 class Component {
 public:
-  static const size_t type_id;
-
-  static size_t GetTypeID()  {
-    return type_id;
-  }
+  // static const ComponentID type_id; -- Declare in children
 
   size_t GetOwner() const {
     return entity_id_;
@@ -20,9 +15,13 @@ public:
   void operator delete[](void*) = delete;
 
 protected:
-  size_t entity_id_ = 0;
+  EntityID entity_id_ = 0;
 };
 
-template <typename T>
-const size_t Component<T>::type_id = TypeCounter::GetId<T>();
+enum {
+  COMPONENT_GRAPHICAL = 0,
+  COMPONENT_PHYSICAL,
+  COMPONENT_MAX
+};
+
 #endif //EFFECTIVE_BROCOLLI_COMPONENT_HPP

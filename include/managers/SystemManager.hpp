@@ -10,7 +10,7 @@
 #include "support/typedefs.hpp"
 #include "support/result.hpp"
 
-using SystemPtr = ISystem*;
+using SystemPtr = System*;
 
 class SystemManager {
 public:

@@ -15,6 +15,6 @@ PhysicalComponent::PhysicalComponent(sf::Rect<float> hitbox_, float mass_, int g
 PhysicalComponent::~PhysicalComponent() {
   PhysicalSystem::GetInstance()->DeleteEntity(this, group_);
 }
-const sf::FloatRect &PhysicalComponent::GetHitbox() {
+const sf::FloatRect& PhysicalComponent::GetHitbox() const {
   return hitbox_;
 }

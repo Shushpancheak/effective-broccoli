@@ -1,30 +1,27 @@
 #ifndef EFFECTIVE_BROCCOLI_EVENT
 #define EFFECTIVE_BROCCOLI_EVENT
 
-#include "support/TypeCounter.hpp"
 #include "support/typedefs.hpp"
-#include "IEvent.hpp"
 
-template <typename T>
-class Event : public IEvent {
+class Event {
 public:
-  Event();
+  // static const EventID type_id; -- add in children
 
-  static const TypeID type_id;
+  Event(const EventID event_id)
+    : event_id_(event_id) {};
 
-  static TypeID GetTypeID() {
-    return type_id;
-  }
+  EventID GetEventID() const { return event_id_; }
 
   void operator delete(void*) = delete;
   void operator delete[](void*) = delete;
+
+private:
+  EventID event_id_;
 };
 
-template<typename T>
-Event<T>::Event()
-  : IEvent(type_id) {}
-
-template <typename T>
-const TypeID Event<T>::type_id = TypeCounter::GetId<T>();
+enum {
+  EVENT_COLLISION = 0,
+  EVENT_MAX
+};
 
 #endif
