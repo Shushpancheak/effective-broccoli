@@ -43,8 +43,8 @@ public:
 
 private:
   ObjectPool events_pool_;
-  std::queue<EventPtr> events_queue_;
-  std::unordered_multimap<EventID, SystemID> subscribed_systems_map_;
+  std::queue<EventPtr> events_queue_{};
+  std::unordered_multimap<EventID, SystemID> subscribed_systems_map_{};
   SystemManager* sys_manager_ptr_;
 };
 

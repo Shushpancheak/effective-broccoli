@@ -10,12 +10,12 @@
 #include "constants/error.hpp"
 #include "support/result.hpp"
 
+//TODO make abstract class Resource.
 class ResourceManager {
-private:
+public:
   ResourceManager();
   ~ResourceManager() = default;
 
-public:
   ResourceManager(const ResourceManager& other) = delete;
   ResourceManager(ResourceManager&& other) = delete;
   ResourceManager& operator=(const ResourceManager&) = delete;
@@ -31,10 +31,7 @@ public:
    */
   sf::Texture& Get(const std::string& path);
 
-  static ResourceManager* GetInstance();
-
 private:
-  static ResourceManager* resource_manager_;
   std::unordered_map<std::string, sf::Texture> map_;
 };
 
