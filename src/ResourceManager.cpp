@@ -1,14 +1,5 @@
 #include "managers/ResourceManager.hpp"
 
-ResourceManager* ResourceManager::resource_manager_= nullptr;
-
-ResourceManager* ResourceManager::GetInstance() {
-  if (resource_manager_ == nullptr) {
-    resource_manager_ = new ResourceManager();
-  }
-  return resource_manager_;
-}
-
 ResourceManager::ResourceManager() {
   std::ifstream infile("resources/essentials.txt");
   std::string line;

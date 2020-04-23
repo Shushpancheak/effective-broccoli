@@ -8,6 +8,11 @@
 
 #include "support/typedefs.hpp"
 
+enum {
+  ENTITY_NULL = 0,
+  ENTITY_MAX
+};
+
 class Entity  {
 public:
   // static const EntityID type_id; -- add in children.

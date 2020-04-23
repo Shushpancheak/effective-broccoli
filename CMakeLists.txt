@@ -16,10 +16,10 @@ include_directories(include)
 
 set (
   SOURCES
-  
   src/QuadTree.cpp
   src/ResourceManager.cpp
-  src/GraphicComponent.cpp
+  src/GraphicalComponent.cpp
+  src/TransformComponent.cpp
   src/ComponentManager.cpp
   src/EntityManager.cpp
   src/ObjectPool.cpp
@@ -27,10 +27,12 @@ set (
   include/constants/error.cpp
   include/support/result.cpp
   src/SystemManager.cpp
+  src/GraphicalSystem.cpp
 )
 set (
   HEADERS
   include/components/PhysicalComponent.hpp
+  include/components/TransformComponent.hpp
   include/systems/PhysicalSystem.hpp
   include/QuadTree.hpp
   include/Entity.hpp
@@ -38,7 +40,7 @@ set (
   include/managers/SystemManager.hpp
   include/managers/ResourceManager.hpp
   include/components/Component.hpp
-  include/components/GraphicComponent.hpp
+  include/components/GraphicalComponent.hpp
   include/managers/ComponentManager.hpp
   include/managers/EntityManager.hpp
   include/memory/ObjectPool.hpp

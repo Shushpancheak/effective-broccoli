@@ -8,6 +8,8 @@ DataChunk::DataChunk(
   , object_count_(object_count)
   , type_id_(type_id)
   , size_(0) {
+  assert(object_size >= sizeof(uint64_t));
+
   buffer_start_ = new char[object_size * object_count_];
   buffer_end_ = buffer_start_ + (object_count_ + 1) * object_size_;
   Free(buffer_start_, object_count_);

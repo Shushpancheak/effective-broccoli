@@ -8,6 +8,7 @@
 #include <cstdint>
 
 using TypeID      = uint32_t;
+
 using EntityID    = TypeID;
 using ComponentID = TypeID;
 using SystemID    = TypeID;
