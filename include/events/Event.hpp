@@ -3,25 +3,34 @@
 
 #include "support/typedefs.hpp"
 
+enum {
+  EVENT_NULL = 0,
+  EVENT_TRANSFORM,
+
+  // Transform events.
+  EVENT_MOVE,
+  EVENT_ROTATE,
+  EVENT_SCALE,
+  EVENT_SET_TRANSFORM,
+
+  //Graphic events.
+  EVENT_MOVE_GRAPHIC,
+  EVENT_ROTATE_GRAPHIC,
+  EVENT_SCALE_GRAPHIC,
+  EVENT_SET_TRANSFORM_GRAPHIC,
+
+  EVENT_COLLISION,
+  EVENT_MAX
+};
+
 class Event {
 public:
   // static const EventID type_id; -- add in children
 
   Event(const EventID event_id)
-    : event_id_(event_id) {};
+    : event_id(event_id) {};
 
-  EventID GetEventID() const { return event_id_; }
-
-  void operator delete(void*) = delete;
-  void operator delete[](void*) = delete;
-
-private:
-  EventID event_id_;
-};
-
-enum {
-  EVENT_COLLISION = 0,
-  EVENT_MAX
+  EventID event_id;
 };
 
 #endif
