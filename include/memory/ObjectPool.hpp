@@ -22,7 +22,7 @@ public:
 
   /**
    * Create an object of type T with args.
-   * type T must have a static type ID given in static method GetTypeID().
+   * type T must have a static type ID given in static field type_id.
    *
    * The created object may be deallocated in following cases:
    * 1) via DeleteObject<T>(ptr)
@@ -74,8 +74,11 @@ inline void ObjectPool::SetObjectCountInChunk(size_t count) {
 
 template<typename T, typename ... Args>
 Result<T*> ObjectPool::CreateObject(Args&&... args) {
+  static_assert(sizeof(T) >= sizeof(uint64_t)); // T must be at least one word long.
+  static_assert((void)T::type_id); // T should have a static type_id field.
+
   for (auto& chunk : chunks_) {
-    if (chunk.GetTypeID() == T::GetTypeID() && !chunk.IsFull()) {
+    if (chunk.GetTypeID() == T::type_id && !chunk.IsFull()) {
       auto res_ptr = chunk.Add<T>(std::forward<Args>(args)...);
       if (res_ptr != nullptr) {
         return res_ptr;
@@ -83,7 +86,7 @@ Result<T*> ObjectPool::CreateObject(Args&&... args) {
     }
   }
 
-  Chunk* new_chunk = new Chunk(sizeof(T), T::GetTypeID(), cur_chunks_obj_count_);
+  Chunk* new_chunk = new Chunk(sizeof(T), T::type_id, cur_chunks_obj_count_);
 
   chunks_.PushFront(new_chunk);
   return chunks_.begin()->Add<T>(std::forward<Args>(args)...);

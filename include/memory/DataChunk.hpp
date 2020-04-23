@@ -12,7 +12,7 @@
  * Use Add and Delete to manage objects.
  *
  * The type of items stored must have a static type ID
- * given in static method GetTypeID().
+ * given in static field type_id.
  *
  * The type stored also has to be at least one word long.
  */
@@ -117,7 +117,7 @@ private:
    * Construct the item of type T with args.
    *
    * @return error codes:
-   * FALSE_TYPE  - type T does not correspond to the static GetTypeID given.
+   * FALSE_TYPE  - type T does not correspond to the static type_id given at Chunk's creation.
    * CTOR_FAILED - constructor of type T with args failed.
    * BAD_PTR     - item_addr is nullptr.
    */
@@ -266,7 +266,7 @@ int DataChunk::Construct(void* item_addr, Args&&... args) {
   OP_ASSERT_IN_BUFFER_RANGE(item_addr);
   OP_ASSERT_ADDRESS_ALIGNED(item_addr);
 
-  if (T::GetTypeID() != type_id_) {
+  if (T::type_id() != type_id_) {
     return FALSE_TYPE;
   }
 
