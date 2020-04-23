@@ -14,7 +14,7 @@ class PhysicalComponent : public Component {
 
   PhysicalComponent(sf::Rect<float> hitbox_, float mass_, int group);
   ~PhysicalComponent();
-  const sf::FloatRect &GetHitbox();
+  const sf::FloatRect &GetHitbox() const;
 
  private:
   sf::Rect<float> hitbox_;

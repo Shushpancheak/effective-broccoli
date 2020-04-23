@@ -3,25 +3,24 @@
 
 #include "support/typedefs.hpp"
 
+enum {
+  COMPONENT_NULL = 0,
+  COMPONENT_GRAPHICAL,
+  COMPONENT_TRANSFORM,
+  COMPONENT_PHYSICAL,
+  COMPONENT_MAX
+};
+
 class Component {
 public:
   // static const ComponentID type_id; -- Declare in children
 
-  size_t GetOwner() const {
-    return entity_id_;
-  }
+  explicit Component(const EntityID owner);
 
-  void operator delete(void*) = delete;
-  void operator delete[](void*) = delete;
-
-protected:
-  EntityID entity_id_ = 0;
+  EntityID entity_id;
 };
 
-enum {
-  COMPONENT_GRAPHICAL = 0,
-  COMPONENT_PHYSICAL,
-  COMPONENT_MAX
-};
+inline Component::Component(const EntityID owner)
+  : entity_id(owner) {}
 
 #endif //EFFECTIVE_BROCOLLI_COMPONENT_HPP
