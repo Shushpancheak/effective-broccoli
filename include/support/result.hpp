@@ -2,49 +2,13 @@
 
 #ifndef EFFECTIVE_BROCOLLI_RESULT_HPP
 #define EFFECTIVE_BROCOLLI_RESULT_HPP
-#pragma once
 
 #include <system_error>
 
 #include <type_traits>
 #include <utility>
 
-namespace detail {
-    template <typename T>
-    class ValueStorage {
-      using Storage = typename std::aligned_storage<sizeof(T), alignof(T)>::type;
-
-    public:
-      template <typename... Arguments>
-      void Construct(Arguments&&... arguments) {
-        new (&storage_) T(std::forward<Arguments>(arguments)...);
-      }
-
-      void MoveConstruct(T&& that) {
-        new (&storage_) T(std::move(that));
-      }
-
-      void CopyConstruct(const T& that) {
-        new (&storage_) T(that);
-      }
-
-      T* PtrUnsafe() {
-        return reinterpret_cast<T*>(&storage_);
-      }
-
-      const T* PtrUnsafe() const {
-        return reinterpret_cast<const T*>(&storage_);
-      }
-
-      void Destroy() {
-        PtrUnsafe()->~T();
-      }
-
-    private:
-      Storage storage_;
-    };
-
-}
+#include "value_storage.hpp"
 
 
 template <typename T>
@@ -72,11 +36,11 @@ public:
 
   // Moving
 
-  Result(Result&& that) {
+  Result(Result&& that) noexcept {
     MoveImpl(std::move(that));
   }
 
-  Result& operator=(Result&& that) {
+  Result& operator=(Result&& that) noexcept {
     DestroyValueIfExist();
     MoveImpl(std::move(that));
     return *this;
@@ -89,6 +53,10 @@ public:
   }
 
   Result& operator=(const Result& that) {
+    if (this == &that) {
+      return *this;
+    }
+
     DestroyValueIfExist();
     CopyImpl(that);
     return *this;
@@ -231,7 +199,7 @@ private:
   }
 
 private:
-  detail::ValueStorage<T> value_;
+  ValueStorage<T> value_;
   std::error_code error_;
 };
 
@@ -296,26 +264,26 @@ using Status = Result<void>;
 
 namespace detail {
 
-    class Failure {
-    public:
-      explicit Failure(std::error_code& error)
-          : error_(error) {
-      }
+  class Failure {
+  public:
+    explicit Failure(std::error_code& error)
+        : error_(error) {
+    }
 
-      Failure(const Failure&) = delete;
-      Failure& operator =(const Failure&) = delete;
+    Failure(const Failure&) = delete;
+    Failure& operator =(const Failure&) = delete;
 
-      Failure(Failure&&) = delete;
-      Failure& operator =(Failure&&) = delete;
+    Failure(Failure&&) = delete;
+    Failure& operator =(Failure&&) = delete;
 
-      template <typename T>
-      operator Result<T>() {
-        return Result<T>::Fail(error_);
-      }
+    template <typename T>
+    operator Result<T>() {
+      return Result<T>::Fail(error_);
+    }
 
-    private:
-      std::error_code error_;
-    };
+  private:
+    std::error_code error_;
+  };
 
 }  // namespace detail
 
@@ -323,43 +291,43 @@ namespace detail {
 
 namespace make_result {
 
-    template <typename T>
-    Result<T> Ok(T&& value) {
-      return Result<T>::Ok(std::move(value));
+  template <typename T>
+  Result<T> Ok(T&& value) {
+    return Result<T>::Ok(std::forward<T>(value));
+  }
+
+  template <typename T>
+  Result<T> Ok(T& value) {
+    return Result<T>::Ok(value);
+  }
+
+  template <typename T>
+  Result<T> Ok(const T& value) {
+    return Result<T>::Ok(value);
+  }
+
+  // Usage: make_result::Ok()
+  Status Ok();
+
+  // Usage: make_result::Fail(error)
+  detail::Failure Fail(std::error_code error);
+
+  // Precondition: result.HasError()
+  template <typename T>
+  detail::Failure PropagateError(Result<T> result) {
+    return Fail(result.Error());
+  }
+
+  // Convert status code (error or success) to Result
+  Status ToStatus(std::error_code error);
+
+  template <typename T>
+  Status JustStatus(Result<T> result) {
+    if (result.IsOk()) {
+      return Ok();
     }
-
-    template <typename T>
-    Result<T> Ok(T& value) {
-      return Result<T>::Ok(value);
-    }
-
-    template <typename T>
-    Result<T> Ok(const T& value) {
-      return Result<T>::Ok(value);
-    }
-
-// Usage: make_result::Ok()
-    Status Ok();
-
-    // Usage: make_result::Fail(error)
-    detail::Failure Fail(std::error_code error);
-
-    // Precondition: result.HasError()
-    template <typename T>
-    detail::Failure PropagateError(Result<T> result) {
-      return Fail(result.Error());
-    }
-
-// Convert status code (error or success) to Result
-    Status ToStatus(std::error_code error);
-
-    template <typename T>
-    Status JustStatus(Result<T> result) {
-      if (result.IsOk()) {
-        return Ok();
-      }
-      return Status::Fail(result.Error());
-    }
+    return Status::Fail(result.Error());
+  }
 
 }  // namespace make_result
 
