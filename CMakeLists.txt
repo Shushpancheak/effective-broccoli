@@ -29,7 +29,7 @@ set (
         include/constants/error.cpp
         include/support/result.cpp
         src/SystemManager.cpp
-        )
+        src/PhysicalSystem.cpp)
 set (
   HEADERS
   include/components/PhysicalComponent.hpp
@@ -48,7 +48,7 @@ set (
   include/memory/DataChunk.hpp
   include/constants/error.hpp
   include/support/result.hpp
-)
+        include/events/MoveAllEvent.hpp)
 
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES} src/main.cpp)
 

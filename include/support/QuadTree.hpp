@@ -19,14 +19,29 @@ class QuadTree
 {
  public:
 
-  QuadTree(const sf::Rect<float>& box) :
+  explicit QuadTree(const sf::Rect<float>& box) :
       max_box_(box), mRoot(new Node()){}
-
+  /**
+   * Insert Component connected with some box in tree;
+   * @param box
+   * @param component
+   */
   void insert(const sf::FloatRect &box, const T& component);
 
+  /**
+   * Delete Component from tree
+   * @param box
+   * @param value
+   */
   void erase(const sf::FloatRect &box, const T& value);
 
-  auto findAllIntersections();
+  /**
+   * Find all collisions in tree.
+   * @return std::vector with collision pairs
+   */
+  auto findAllIntersections() const;
+
+  auto findAllntersectionsWithBox(const sf::FloatRect &box) const;
 
  private:
   static constexpr size_t Threshold = 16;
@@ -54,6 +69,8 @@ class QuadTree
     return !node->children[0];
   }
 
+  void query(pNode node, const sf::FloatRect& box, const sf::FloatRect& query_box, std::vector<T>& result) const;
+
   void merge(pNode node);
 
   void split(pNode node, const sf::FloatRect& box);
@@ -62,9 +79,9 @@ class QuadTree
 
   void erase(pNode node, pNode parent, sf::FloatRect box, const Element &value);
 
-  void findAllIntersections(pNode node, std::vector<std::pair<T, T> >& int_vector);
+  void findAllIntersections(pNode node, std::vector<std::pair<T, T> >& int_vector) const;
 
-  void findAllDescIntersections(QuadTree::pNode node, const Element &component, std::vector<std::pair<T, T> >& intersections);
+  void findAllDescIntersections(QuadTree::pNode node, const Element &component, std::vector<std::pair<T, T> >& intersections) const;
 
   };
 
@@ -181,7 +198,7 @@ void QuadTree<T>::erase(QuadTree::pNode node, QuadTree::pNode parent, sf::FloatR
 }
 
 template <typename T>
-void QuadTree<T>::findAllIntersections(QuadTree::pNode node, std::vector<std::pair<T, T> >& int_vector) {
+void QuadTree<T>::findAllIntersections(QuadTree::pNode node, std::vector<std::pair<T, T> >& int_vector) const{
   int max_val = 0;
   for (auto& value : node->values) {
     for (int j = 0; j < max_val; j++)
@@ -200,7 +217,7 @@ void QuadTree<T>::findAllIntersections(QuadTree::pNode node, std::vector<std::pa
 }
 
 template <typename T>
-void QuadTree<T>::findAllDescIntersections(QuadTree::pNode node, const Element& component, std::vector<std::pair<T, T> >& intersections) {
+void QuadTree<T>::findAllDescIntersections(QuadTree::pNode node, const Element& component, std::vector<std::pair<T, T> >& intersections) const{
   for (const auto& other : node->values)
     if (component.getHitbox().intersects(other.getHitbox()))
       intersections.emplace_back(component.value, other.value);
@@ -210,7 +227,7 @@ void QuadTree<T>::findAllDescIntersections(QuadTree::pNode node, const Element& 
 }
 
 template <typename T>
-auto QuadTree<T>::findAllIntersections() {
+auto QuadTree<T>::findAllIntersections() const{
   std::vector<std::pair<T, T> > result;
   findAllIntersections(mRoot, result);
   return result;
@@ -224,6 +241,34 @@ void QuadTree<T>::erase(const sf::FloatRect &box, const T& value) {
 template <typename T>
 void QuadTree<T>::insert(const sf::FloatRect &box, const T& component) {
   insert(mRoot, 0, max_box_, Element(component, box));
+}
+template<typename T>
+void QuadTree<T>::query(QuadTree::pNode node,
+                        const sf::FloatRect &box,
+                        const sf::FloatRect &query_box,
+                        std::vector<T> &result) const {
+    for (const auto& value : node->values)
+    {
+      if (query_box.intersects(mGetBox(value.box)))
+        result.push_back(value.value);
+    }
+    if (!isLeaf(node))
+    {
+      for (auto i = 0; i < node->children.size(); ++i)
+      {
+        auto childBox = ComputeBoxByIndex(box, i);
+        if (query_box.intersects(childBox))
+          query(node->children[i].get(), childBox, query_box, result);
+      }
+    }
+
+}
+
+template<typename T>
+auto QuadTree<T>::findAllntersectionsWithBox(const sf::FloatRect &box) const {
+  std::vector<T> result;
+  query(mRoot, max_box_, box, result);
+  return result;
 }
 
 #endif //EFFECTIVE_BROCOLLI_INCLUDE_QUADTREE_HPP_

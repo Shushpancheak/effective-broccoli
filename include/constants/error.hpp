@@ -8,6 +8,7 @@ if (res.HasError()) {\
 }
 
 enum ErrorCode : int {
+  ALL_OK,
   FALSE_TYPE = 1,
   CTOR_FAILED,
   BAD_PTR,
