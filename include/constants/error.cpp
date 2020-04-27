@@ -15,6 +15,9 @@ namespace { // anonymous namespace
   {
     switch (ev)
     {
+      case ErrorCode::ALL_OK:
+        return "All ok, false alert)";
+
       case ErrorCode::FALSE_TYPE:
         return "Types don't match.";
 

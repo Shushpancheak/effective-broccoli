@@ -12,11 +12,10 @@ project (
   DESCRIPTION ""
 )
 
-include_directories(include)
+include_directories("include")
 
 set (
   SOURCES
-  src/QuadTree.cpp
   src/ResourceManager.cpp
   src/GraphicalComponent.cpp
   src/TransformComponent.cpp
@@ -35,6 +34,9 @@ set (
   include/components/TransformComponent.hpp
   include/systems/PhysicalSystem.hpp
   include/QuadTree.hpp
+  include/components/PhysicalComponent.hpp
+  include/systems/PhysicalSystem.hpp
+        include/support/QuadTree.hpp
   include/Entity.hpp
   include/systems/System.hpp
   include/managers/SystemManager.hpp
@@ -47,7 +49,7 @@ set (
   include/memory/DataChunk.hpp
   include/constants/error.hpp
   include/support/result.hpp
-)
+        include/events/MoveAllEvent.hpp)
 
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES} src/main.cpp)
 
@@ -70,7 +72,6 @@ include_directories(${gtest_SOURCE_DIR})
 set(UNIT_TESTS_NAME "run-tests-${PROJECT_NAME}")
 set(UNIT_TESTS_FILE
         "test/test.cpp"
-        "test/QuadTreeTest.cpp"
 )
 
 add_executable(${UNIT_TESTS_NAME} ${UNIT_TESTS_FILE} ${HEADERS} ${SOURCES})

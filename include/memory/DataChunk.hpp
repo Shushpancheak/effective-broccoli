@@ -20,8 +20,8 @@ class DataChunk : public IntrusiveNode<DataChunk> {
   using TypeID = size_t;
 
 public:
-  explicit DataChunk(const size_t object_size, const TypeID type_id,
-                 const size_t object_count = 100);
+  explicit DataChunk(size_t object_size, TypeID type_id,
+                        size_t object_count = 100);
   ~DataChunk();
 
   DataChunk(const DataChunk& other) = delete;
@@ -95,22 +95,22 @@ public:
   /**
    * @return does DataChunk has no objects.
    */
-  bool IsEmpty() const;
+  [[nodiscard]] bool IsEmpty() const;
 
   /**
    * @return is DataChunk full with objects.
    */
-  bool IsFull() const;
+  [[nodiscard]] bool IsFull() const;
 
   /**
    * @return number of objects held in DataChunk.
    */
-  size_t Size() const;
+  [[nodiscard]] size_t Size() const;
 
   /**
    * @return static type id of object type held in DataChunk.
    */
-  TypeID GetTypeID() const;
+  [[nodiscard]] TypeID GetTypeID() const;
 
 private:
   /**
@@ -127,7 +127,7 @@ private:
   /**
    * Free items starting from `item_addr` up to (T*)item_addr + count
    */
-  void Free(void* item_addr, const size_t count);
+  void Free(void* item_addr, size_t count);
 
   /**
    * Check if the item pointed to by `item_addr` is freed.
@@ -144,7 +144,7 @@ private:
    *
    * @return Address of the item; nullptr on failure.
    */
-  void* GetAvailable() const;
+  [[nodiscard]] void* GetAvailable() const;
 
 // Utilities
 private:
@@ -186,10 +186,10 @@ Result<T*> DataChunk::Add(Args&&... args) {
 
   if (res == 0) {
     ++size_;
-    return reinterpret_cast<T*>(available_ptr);
+    return make_result::Ok(reinterpret_cast<T*>(available_ptr));
   }
 
-  return nullptr;
+  return make_result::Fail(CTOR_FAILED);
 }
 
 template<typename T>
