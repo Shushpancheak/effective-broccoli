@@ -6,6 +6,7 @@
 #include "managers/EntityManager.hpp"
 #include "managers/ResourceManager.hpp"
 #include "managers/SystemManager.hpp"
+#include "systems/PhysicalSystem.hpp"
 
 int main() {
   sf::RenderWindow window(sf::VideoMode(200, 200), "effective-brocolli");

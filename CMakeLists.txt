@@ -27,16 +27,17 @@ set (
   include/support/result.cpp
   src/SystemManager.cpp
   src/GraphicalSystem.cpp
+  src/PhysicalComponent.cpp
+  src/PhysicalSystem.cpp
 )
 set (
   HEADERS
   include/components/PhysicalComponent.hpp
   include/components/TransformComponent.hpp
   include/systems/PhysicalSystem.hpp
-  include/QuadTree.hpp
   include/components/PhysicalComponent.hpp
   include/systems/PhysicalSystem.hpp
-        include/support/QuadTree.hpp
+  include/support/QuadTree.hpp
   include/Entity.hpp
   include/systems/System.hpp
   include/managers/SystemManager.hpp
@@ -49,7 +50,7 @@ set (
   include/memory/DataChunk.hpp
   include/constants/error.hpp
   include/support/result.hpp
-        include/events/MoveAllEvent.hpp)
+  include/events/MoveAllEvent.hpp)
 
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES} src/main.cpp)
 
