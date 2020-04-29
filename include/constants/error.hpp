@@ -54,7 +54,7 @@ inline std::string GetErrorMsg(const int errc) {
     return "Object is not present.";
 
   case ErrorCode::NOT_FOUND:
-    return "Object was not found.";
+    return "Object not found.";
 
   case ErrorCode::BAD_PTR:
     return "Invalid pointer.";

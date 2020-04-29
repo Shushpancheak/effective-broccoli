@@ -11,6 +11,8 @@ enum {
 
 const char WINDOW_TITLE[] = "effective-broccoli";
 
+const sf::Rect<float> WORLD_BOUNDARY = {0, 0, 200, 200};
+
 #ifdef _DEBUG
 
 #ifdef WIN32

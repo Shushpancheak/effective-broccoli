@@ -18,23 +18,22 @@ set (
   SOURCES
   src/main.cpp
 
-  #src/QuadTree.cpp
-
   src/GraphicalComponent.cpp
   src/TransformComponent.cpp
-  #src/PhysicalComponent.cpp
+  src/PhysicalComponent.cpp
   
   src/ResourceManager.cpp
   src/ComponentManager.cpp
   src/EntityManager.cpp
   src/EventManager.cpp
-  src/SystemManager.cpp  
+  src/SystemManager.cpp
 
   src/ObjectPool.cpp
   src/DataChunk.cpp
   
   src/GraphicalSystem.cpp
   src/TransformSystem.cpp
+  src/PhysicalSystem.cpp
 )
 
 set (
@@ -44,12 +43,13 @@ set (
 
   include/components/Component.hpp
   include/components/GraphicalComponent.hpp
-  #include/components/PhysicalComponent.hpp
+  include/components/PhysicalComponent.hpp
   include/components/TransformComponent.hpp
+
   include/systems/System.hpp
+  include/systems/GraphicalSystem.hpp
+  include/systems/TransformSystem.hpp
   include/systems/PhysicalSystem.hpp
-  
-  #include/QuadTree.hpp
   
   include/entities/Entity.hpp
   include/entities/Broccoli.hpp
@@ -76,6 +76,7 @@ set (
   include/support/result.cpp
   include/support/IntrusiveList.hpp
   include/support/IntrusiveNode.hpp
+  include/support/QuadTree.hpp
 )
 
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES} src/main.cpp)

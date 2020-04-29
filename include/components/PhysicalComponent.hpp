@@ -14,31 +14,31 @@ enum class PhysicalGroup {
   UnInteractObject
 };
 
-class PhysicalComponent : public Component<PhysicalComponent> {
+class PhysicalComponent : public Component {
  public:
+  static const ComponentID type_id = COMPONENT_PHYSICAL;
   friend class PhysicalSystem;
-  PhysicalComponent(sf::Rect<float> hitbox_, float mass_, PhysicalGroup group);
 
-  sf::FloatRect GetHitbox();
+  PhysicalComponent(const EntityID owner, sf::Rect<float> hitbox_, float mass_, PhysicalGroup group);
+
+  sf::FloatRect GetHitbox() const;
 
   /**
-   * Return time that need for first collision of object to our
-   * @param moving_object
-   * @return time requre for first collision
+   * Returns time that is needed for first collision of object to this one.
    */
-  double trackCollision(const PhysicalComponent& object, Duration dt) const;
+  double TrackCollision(const PhysicalComponent& object, double dt) const;
 
   /**
    * Update hitbox by implicit Euler integration
-   * @param dt
+   * @param dt delta time
    */
   void UpdateHitbox(double dt);
 
   /**
    * Revert hitbox by time dt.
-   * @param dt
+   * @param dt delta time
    */
-  void revertHitbox(double dt);
+  void RevertHitbox(double dt);
 
  private:
   static constexpr double EPS = 1e-7;
@@ -49,7 +49,7 @@ class PhysicalComponent : public Component<PhysicalComponent> {
   PhysicalGroup group_;
 };
 
-sf::FloatRect operator+(sf::FloatRect box, const sf::Vector2f& ds) {
+inline sf::FloatRect operator+(sf::FloatRect box, const sf::Vector2f& ds) {
   box.top += ds.y;
   box.left += ds.x;
   return box;

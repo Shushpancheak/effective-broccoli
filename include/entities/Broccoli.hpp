@@ -5,6 +5,7 @@
 
 #include "engine/core.hpp"
 #include "components/TransformComponent.hpp"
+#include "components/PhysicalComponent.hpp"
 
 class BroccoliEntity : public Entity {
 public:
@@ -17,6 +18,10 @@ public:
     REPORT_IF_ERROR(
       bro::GetComponentManager()->
         AddComponent<TransformComponent>(entity_id, nullptr));
+
+    REPORT_IF_ERROR(
+      bro::GetComponentManager()->
+        AddComponent<PhysicalComponent>(entity_id, {0, 0, 10, 10}, 1, PhysicalGroup::DynamicObject));
 
     GraphicalSystem* graphical_sys =
       dynamic_cast<GraphicalSystem*>(
