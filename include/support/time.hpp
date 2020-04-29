@@ -7,7 +7,7 @@ using Duration  = std::chrono::nanoseconds;
 using Clock     = std::chrono::steady_clock;
 using TimeStamp = std::chrono::time_point<Clock>;
 
-double DurationToDouble(const Duration& dur) {
+inline double DurationToDouble(const Duration& dur) {
   return dur.count() * 1.0 / Duration::period::num * Duration::period::den;
 }
 
