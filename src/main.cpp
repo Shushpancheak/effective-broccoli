@@ -7,8 +7,6 @@
 #include "entities/Broccoli.hpp"
 
 int main() {
-  std::system("echo %cd%");
-
   bro::Init().ThrowIfError();
 
   bro::GetEntityManager()->AddEntity<BroccoliEntity>().ThrowIfError();

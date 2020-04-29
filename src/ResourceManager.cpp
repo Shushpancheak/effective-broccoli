@@ -3,8 +3,6 @@
 ResourceManager::ResourceManager() {
   std::string path = std::string(defaults::RESOURCES_FOLDER) + std::string("essentials.txt");
 
-  std::system("echo %cd%");
-
   std::ifstream infile(path);
   std::string line;
   while (std::getline(infile, line)) {
