@@ -63,15 +63,13 @@ public:
   }
 
   // Dtor
-
   ~Result() {
     DestroyValueIfExist();
   }
 
   // Testing
-
   bool HasError() const {
-    return (bool)error_;
+    return static_cast<bool>(error_);
   }
 
   bool IsOk() const {
@@ -94,13 +92,12 @@ public:
   }
 
   // Ignore result, just check for error
-  void ExpectOk() {
+  void ExpectOk() const {
     ThrowIfError();
   }
 
   // ErrorCode accessors
-
-  bool MatchErrorCode(int expected) const {
+  bool MatchErrorCode(const int expected) const {
     return error_.value() == expected;
   }
 

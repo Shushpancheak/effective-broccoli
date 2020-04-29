@@ -13,7 +13,7 @@ enum {
 
 class Component {
 public:
-  // static const ComponentID type_id; -- Declare in children
+  static const ComponentID type_id = COMPONENT_NULL; //-- Redeclare in children
 
   explicit Component(const EntityID owner);
 

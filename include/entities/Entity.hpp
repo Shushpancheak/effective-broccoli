@@ -10,21 +10,19 @@
 
 enum {
   ENTITY_NULL = 0,
+
+  ENTITY_GRAPHICAL_PLACEHOLDER,
+  ENTITY_BROCCOLI,
+
   ENTITY_MAX
 };
 
-class Entity  {
+class Entity {
 public:
-  // static const EntityID type_id; -- add in children.
+  static const EntityID type_id = ENTITY_NULL; // -- add in children.
 
   explicit Entity(const EntityID id)
     : id_(id) {};
-
-  //Entity(const Entity& other) = delete;
-  //Entity(Entity&& other) noexcept;
-  //
-  //Entity& operator=(const Entity& other) = delete;
-  //Entity& operator=(Entity&& other) noexcept;
 
   ~Entity() = default;
 

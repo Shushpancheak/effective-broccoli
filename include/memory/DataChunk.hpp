@@ -122,7 +122,7 @@ private:
    * BAD_PTR     - item_addr is nullptr.
    */
   template<typename T, typename... Args>
-  int Construct(void* item_addr, Args&&... args);
+  Status Construct(void* item_addr, Args&&... args);
 
   /**
    * Free items starting from `item_addr` up to (T*)item_addr + count
@@ -182,14 +182,14 @@ Result<T*> DataChunk::Add(Args&&... args) {
   assert(available_ptr != nullptr); // Checked for fullness earlier.
   OP_ASSERT_IN_BUFFER_RANGE(available_ptr);
 
-  const int res = Construct<T, Args...>(available_ptr, std::forward<Args>(args)...);
+  const auto res = Construct<T, Args...>(available_ptr, std::forward<Args>(args)...);
 
-  if (res == 0) {
+  if (!res.HasError()) {
     ++size_;
-    return reinterpret_cast<T*>(available_ptr);
+    return make_result::Ok(static_cast<T*>(available_ptr));
   }
 
-  return nullptr;
+  return make_result::PropagateError(res);
 }
 
 template<typename T>
@@ -262,21 +262,21 @@ Status DataChunk::DeleteIfPresent(T* item_ptr, size_t count) {
 }
 
 template<typename T, typename ... Args>
-int DataChunk::Construct(void* item_addr, Args&&... args) {
+Status DataChunk::Construct(void* item_addr, Args&&... args) {
   OP_ASSERT_IN_BUFFER_RANGE(item_addr);
   OP_ASSERT_ADDRESS_ALIGNED(item_addr);
 
-  if (T::type_id() != type_id_) {
-    return FALSE_TYPE;
+  if (T::type_id != type_id_) {
+    return make_result::Fail(FALSE_TYPE);
   }
 
   if (item_addr == nullptr) {
-    return BAD_PTR;
+    return make_result::Fail(BAD_PTR);
   }
 
   void* res_ptr = new (item_addr) T(std::forward<Args>(args)...);
 
-  return (res_ptr == nullptr ? CTOR_FAILED : 0);
+  return (res_ptr == nullptr ? make_result::Fail(CTOR_FAILED) : make_result::Ok());
 }
 
 #endif

@@ -75,12 +75,12 @@ inline void ObjectPool::SetObjectCountInChunk(size_t count) {
 template<typename T, typename ... Args>
 Result<T*> ObjectPool::CreateObject(Args&&... args) {
   static_assert(sizeof(T) >= sizeof(uint64_t)); // T must be at least one word long.
-  static_assert((void)T::type_id); // T should have a static type_id field.
+  static_assert(T::type_id || !T::type_id); // T should have a static type_id field.
 
   for (auto& chunk : chunks_) {
     if (chunk.GetTypeID() == T::type_id && !chunk.IsFull()) {
       auto res_ptr = chunk.Add<T>(std::forward<Args>(args)...);
-      if (res_ptr != nullptr) {
+      if (!res_ptr.HasError()) {
         return res_ptr;
       }
     }

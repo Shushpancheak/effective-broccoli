@@ -10,9 +10,11 @@ struct GraphicalComponent : public Component {
   GraphicalComponent(EntityID owner, GraphicalComponent* const parent);
 
   // uint8_t animation_variant;
-  // uint8_t animation_frame;  - later do svyazi
+  // uint8_t animation_frame;
 
-  sf::Sprite sprite;           // contains (of all other things) absolute transform
+  sf::Sprite sprite;
+  sf::Transform abs_transform; // absolute transform that
+                               // equals parents_transform * rel_transform
   sf::Transform rel_transform; // local transform that applies to the parent's transform
 
   std::vector<GraphicalComponent*> children;

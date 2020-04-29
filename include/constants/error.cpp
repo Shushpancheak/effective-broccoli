@@ -11,49 +11,11 @@ namespace { // anonymous namespace
     return "effective-broccoli";
   }
 
-  std::string ErrorCategory::message(int ev) const
-  {
-    switch (ev)
-    {
-      case ErrorCode::FALSE_TYPE:
-        return "Types don't match.";
-
-      case ErrorCode::ALLOC_FAILED:
-        return "Allocation fail.";
-
-      case ErrorCode::ALREADY_DELETED:
-        return "Chunk has already been deleted.";
-
-      case ErrorCode::CTOR_FAILED:
-        return "Unable to construct chunk.";
-
-      case ErrorCode::OUT_OF_BOUNDS:
-        return "Buffer out of bounds.";
-
-      case ErrorCode::OBJECT_NOT_PRESENT:
-        return "Object is not present.";
-
-      case ErrorCode::NOT_FOUND:
-        return "Object was not found.";
-
-      case ErrorCode::BAD_PTR:
-        return "Invalid pointer.";
-
-      case ErrorCode::LOAD_ERROR:
-        return "Unable to load from given file.";
-
-      case ErrorCode::IS_FULL:
-        return "Container overflow.";
-
-      case ErrorCode::SUBSCRIPTION_NOT_FOUND:
-        return "Subscription not found.";
-
-      default:
-        return "Unknown error.";
-    }
+  std::string ErrorCategory::message(int ev) const {
+    return GetErrorMsg(ev);
   }
 
-    const ErrorCategory effectiveBroccoliErrorCategory {}; // using const to avoid static initialization order fiasco.
+  const ErrorCategory effectiveBroccoliErrorCategory {}; // using const to avoid static initialization order fiasco.
 
 }
 

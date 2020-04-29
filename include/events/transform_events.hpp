@@ -9,7 +9,7 @@
 struct MoveEvent : public Event {
   static const EventID type_id = EVENT_MOVE;
 
-  MoveEvent(EntityID entity_id, const sf::Vector2f vec)
+  MoveEvent(const EntityID entity_id, const sf::Vector2f vec)
     : Event(type_id)
     , entity_id(entity_id)
     , move_vec(vec) {}

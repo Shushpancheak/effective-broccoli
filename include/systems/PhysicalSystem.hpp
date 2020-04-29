@@ -4,10 +4,12 @@
 
 #ifndef EFFECTIVE_BROCOLLI__PHYSICALSYSTEM_HPP_
 #define EFFECTIVE_BROCOLLI__PHYSICALSYSTEM_HPP_
-#include "Entity.hpp"
+#include "System.hpp"
+
+#include "entities/Entity.hpp"
 #include "components/PhysicalComponent.hpp"
 #include "QuadTree.hpp"
-#include "System.hpp"
+
 
 // Group - bitmask? or register groups
 class PhysicalSystem : public System {

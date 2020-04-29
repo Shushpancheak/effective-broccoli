@@ -2,21 +2,31 @@
 #define EFFECTIVE_BROCCOLI_GRAPHICAL_SYSTEM
 
 #include "SFML/Graphics/RenderWindow.hpp"
+
 #include "System.hpp"
 
 #include "components/GraphicalComponent.hpp"
+#include "events/graphic_events.hpp"
+#include "entities/GraphicalPlaceholderEntity.hpp"
+
+#include "engine/core.hpp"
 
 class GraphicalSystem : public System {
 public:
   const static SystemID type_id = SYSTEM_GRAPHICAL;
 
-  explicit GraphicalSystem(sf::RenderWindow& window);
+  GraphicalComponent* GetBackground() { return &background_; }
+  GraphicalComponent* GetMiddle    () { return &middle_    ; }
+  GraphicalComponent* GetForeground() { return &foreground_; }
+
+  explicit GraphicalSystem();
   
   virtual void Accept(EventPtr event_ptr) override;
-  virtual void Update(float delta_time) override;
 
 private:
-  sf::RenderWindow& window_;
+  virtual void Update(Duration delta_time) override;
+
+  static void UpdateRecursive(GraphicalComponent* node, GraphicalComponent* prev);
 
   GraphicalComponent root_;
 

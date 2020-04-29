@@ -6,7 +6,7 @@
 #define EFFECTIVE_BROCOLLI_ENTITY_MANAGER_HPP
 
 #include <unordered_map>
-#include "Entity.hpp"
+#include "entities/Entity.hpp"
 #include "memory/ObjectPool.hpp"
 #include "support/result.hpp"
 #include "support/typedefs.hpp"
@@ -29,16 +29,16 @@ private:
   ObjectPool entity_pool_;
 };
 
-EntityID EntityManager::current_id_ = 0;
+inline EntityID EntityManager::current_id_ = 0;
 
 template<typename T, typename... Args>
 Result<EntityID> EntityManager::AddEntity(Args&&... args) {
   auto entity_id = EntityManager::current_id_++;
-  T* ptr = entity_pool_.CreateObject<T>(entity_id, std::forward<Args>(args)...);
-  if (!ptr) {
+  auto ptr = entity_pool_.CreateObject<T>(entity_id, std::forward<Args>(args)...);
+  if (ptr.HasError()) {
     return make_result::Fail(ALLOC_FAILED);
   }
-  map_[entity_id] = ptr;
+  map_[entity_id] = ptr.ValueUnsafe();
   return make_result::Ok(entity_id);
 }
 
@@ -48,7 +48,7 @@ Status EntityManager::DeleteEntity(const EntityID entity_id) {
     return make_result::Fail(NOT_FOUND);
   }
 
-  const auto target = map_[entity_id];
+  auto* const target = map_[entity_id];
   auto res = entity_pool_.DeleteObject<T>(target);
   CHECK_ERROR(res);
   map_.erase(entity_id);

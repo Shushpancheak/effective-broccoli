@@ -5,7 +5,6 @@
 #include <unordered_map>
 #include "support/result.hpp"
 #include "support/time.hpp"
-#include "support/IntrusiveList.hpp"
 #include "events/Event.hpp"
 #include "memory/ObjectPool.hpp"
 #include "managers/SystemManager.hpp"
@@ -14,7 +13,7 @@ class EventManager {
   using EventPtr = Event*;
 
 public:
-  explicit EventManager(SystemManager* sys_manager_ptr);
+  explicit EventManager(SystemManager* system_man);
 
   /**
    * Run event loop, but for a time that does
@@ -45,12 +44,12 @@ private:
   ObjectPool events_pool_;
   std::queue<EventPtr> events_queue_{};
   std::unordered_multimap<EventID, SystemID> subscribed_systems_map_{};
-  SystemManager* sys_manager_ptr_;
+  SystemManager* system_man_ptr;
 };
 
 template<typename T, typename ... Args>
 Status EventManager::RegisterEvent(Args&&... args) {
-  auto create_res = events_pool_.CreateObject<T>(args...);
+  auto create_res = events_pool_.CreateObject<T>(T::type_id, args...);
 
   CHECK_ERROR(create_res);
 

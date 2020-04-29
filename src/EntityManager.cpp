@@ -14,8 +14,8 @@ Status EntityManager::DeletePodEntity(const EntityID entity_id) {
     return make_result::Fail(NOT_FOUND);
   }
 
-  const auto target = map_[entity_id];
-  auto res = entity_pool_.Free(target);
+  auto* const target = map_[entity_id];
+  const auto res = entity_pool_.Free(target);
   CHECK_ERROR(res);
   map_.erase(entity_id);
 

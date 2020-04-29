@@ -4,8 +4,8 @@
 #include "components/PhysicalComponent.hpp"
 #include "systems/PhysicalSystem.hpp"
 
-PhysicalComponent::PhysicalComponent(sf::Rect<float> hitbox_, float mass_, int group):
- hitbox_(hitbox_),
+PhysicalComponent::PhysicalComponent(sf::Rect<float> hitbox_, float mass_, int group)
+  : Component(1), hitbox_(hitbox_),
  mass_(mass_),
  velocity_(0, 0),
  group_(group) {

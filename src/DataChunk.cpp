@@ -80,7 +80,7 @@ void DataChunk::Free(void* item_addr, const size_t count) {
   OP_ASSERT_IN_BUFFER_RANGE(item_addr);
   OP_ASSERT_ADDRESS_ALIGNED(item_addr);
 
-  char* item_byte_addr = reinterpret_cast<char*>(item_addr);
+  char* item_byte_addr = static_cast<char*>(item_addr);
   char* end = item_byte_addr + count * object_size_;
   for (char* addr = item_byte_addr; addr < end; addr += object_size_) {
     *reinterpret_cast<size_t*>(addr) = EMPTY_MEMORY_BYTES;
@@ -88,5 +88,5 @@ void DataChunk::Free(void* item_addr, const size_t count) {
 }
 
 bool DataChunk::IsAvailable(void* item_addr) {
-  return *reinterpret_cast<size_t*>(item_addr) == EMPTY_MEMORY_BYTES;
+  return *static_cast<size_t*>(item_addr) == EMPTY_MEMORY_BYTES;
 }

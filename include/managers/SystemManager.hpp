@@ -4,7 +4,9 @@
 
 #include <unordered_map>
 #include <utility>
+
 #include "systems/System.hpp"
+
 #include "constants/error.hpp"
 #include "memory/ObjectPool.hpp"
 #include "support/typedefs.hpp"
@@ -14,6 +16,8 @@ using SystemPtr = System*;
 
 class SystemManager {
 public:
+  SystemManager() = default;
+
   /**
    * Get pointer to a system using its id.
    */
@@ -50,32 +54,32 @@ Status SystemManager::AddSystem(Args&&... args) {
     return make_result::Fail(ALLOC_FAILED);
   }
 
-  map_[T::GetTypeId()] = ptr;
+  map_[T::type_id] = ptr;
   return make_result::Ok();
 }
 
 template<typename T>
 Status SystemManager::DeleteSystem() {
-  if (map_.count(T::GetTypeID()) == 0) {
+  if (map_.count(T::type_id) == 0) {
     return make_result::Fail(NOT_FOUND);
   }
 
-  auto res = system_pool_.DeleteObject<T>(map_[T::GetTypeId()]);
+  auto res = system_pool_.DeleteObject<T>(map_[T::type_id]);
   if (res.HasError()) {
     return res;
   }
 
-  map_[T::GetTypeId()].erase(T::GetTypeID());
+  map_[T::type_id].erase(T::type_id);
   return make_result::Ok();
 }
 
 template<typename T>
 Result<T*> SystemManager::GetSystem() {
-  if (map_.count(T::GetTypeID()) == 0) {
+  if (map_.count(T::type_id) == 0) {
     return make_result::Fail(NOT_FOUND);
   }
 
-  return make_result::Ok(dynamic_cast<T*>(map_[T::GetTypeID()]));
+  return make_result::Ok(dynamic_cast<T*>(map_[T::type_id]));
 }
 
 #endif //EFFECTIVE_BROCOLLI_SYSTEMMANAGER_HPP

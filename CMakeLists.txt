@@ -16,37 +16,67 @@ include_directories(include)
 
 set (
   SOURCES
-  src/QuadTree.cpp
-  src/ResourceManager.cpp
+  src/main.cpp
+
+  #src/QuadTree.cpp
+
   src/GraphicalComponent.cpp
   src/TransformComponent.cpp
+  #src/PhysicalComponent.cpp
+  
+  src/ResourceManager.cpp
   src/ComponentManager.cpp
   src/EntityManager.cpp
+  src/EventManager.cpp
+  src/SystemManager.cpp  
+
   src/ObjectPool.cpp
   src/DataChunk.cpp
-  include/constants/error.cpp
-  include/support/result.cpp
-  src/SystemManager.cpp
+  
   src/GraphicalSystem.cpp
+  src/TransformSystem.cpp
 )
+
 set (
   HEADERS
-  include/components/PhysicalComponent.hpp
-  include/components/TransformComponent.hpp
-  include/systems/PhysicalSystem.hpp
-  include/QuadTree.hpp
-  include/Entity.hpp
-  include/systems/System.hpp
-  include/managers/SystemManager.hpp
-  include/managers/ResourceManager.hpp
+  include/engine/core.hpp
+  include/engine/main.hpp
+
   include/components/Component.hpp
   include/components/GraphicalComponent.hpp
+  #include/components/PhysicalComponent.hpp
+  include/components/TransformComponent.hpp
+
+  include/systems/System.hpp
+  include/systems/PhysicalSystem.hpp
+  
+  #include/QuadTree.hpp
+  
+  include/entities/Entity.hpp
+  include/entities/Broccoli.hpp
+  include/entities/GraphicalPlaceholderEntity.hpp
+
+  include/events/Event.hpp
+  include/events/graphic_events.hpp
+  include/events/transform_events.hpp
+  
+  include/managers/SystemManager.hpp
+  include/managers/ResourceManager.hpp 
   include/managers/ComponentManager.hpp
   include/managers/EntityManager.hpp
+  include/managers/EventManager.hpp
+  
   include/memory/ObjectPool.hpp
   include/memory/DataChunk.hpp
+  
   include/constants/error.hpp
+  include/constants/error.cpp
+  include/constants/defaults.hpp
+  
   include/support/result.hpp
+  include/support/result.cpp
+  include/support/IntrusiveList.hpp
+  include/support/IntrusiveNode.hpp
 )
 
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES} src/main.cpp)

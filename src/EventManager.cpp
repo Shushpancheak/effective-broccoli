@@ -1,26 +1,26 @@
 #include "managers/EventManager.hpp"
 
-EventManager::EventManager(SystemManager* sys_manager_ptr)
+EventManager::EventManager(SystemManager* system_man)
   : events_pool_()
   , events_queue_()
   , subscribed_systems_map_()
-  , sys_manager_ptr_(sys_manager_ptr) {}
+  , system_man_ptr(system_man) {}
 
 void EventManager::RunFor(const Duration duration) {
   const StopWatch watch;
 
   while (!events_queue_.empty() && watch.Elapsed() < duration) {
-    const auto event_ptr = events_queue_.front();
+    auto* const event_ptr = events_queue_.front();
     events_queue_.pop();
 
-    const EventID event_id = event_ptr->GetEventID();
-    auto iter_pair = subscribed_systems_map_.equal_range(event_id);
+    const EventID event_id = event_ptr->event_id;
+    const auto iter_pair = subscribed_systems_map_.equal_range(event_id);
     auto iter = iter_pair.first;
     auto end = iter_pair.second;
     for (; iter != end; ++iter) {
-      auto system = sys_manager_ptr_->GetSystem(iter->second);
+      auto system = system_man_ptr->GetSystem(iter->second);
 
-      assert(system.IsOk());
+      system.ThrowIfError();
 
       system.ValueUnsafe()->Accept(event_ptr);
     }

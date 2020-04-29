@@ -39,33 +39,33 @@ private:
 
 template<typename T, typename ...Args>
 Status ComponentManager::AddComponent(const EntityID entity_id, Args&&... args) {
-  T* ptr = component_pool_.CreateObject<T>(std::forward(args)...);
-  if (!ptr) {
+  auto ptr = component_pool_.CreateObject<T>(entity_id, std::forward<Args>(args)...);
+  if (ptr.HasError()) {
     return make_result::Fail(ALLOC_FAILED);
   }
-  map_[entity_id][T::GetTypeID()] = ptr;
+  map_[entity_id][T::type_id] = ptr.ValueUnsafe();
   return make_result::Ok();
 }
 
 template<typename T>
 Status ComponentManager::DeleteComponent(const EntityID entity_id) {
-  if (map_[entity_id].count(T::GetTypeID()) == 0) {
+  if (map_[entity_id].count(T::type_id) == 0) {
     return make_result::Fail(NOT_FOUND);
   }
-  auto res = component_pool_.DeleteObject<T>(map_[entity_id][T::GetTypeID()] );
+  auto res = component_pool_.DeleteObject<T>(map_[entity_id][T::type_id] );
   if (res.HasError()) {
     return res;
   }
-  map_[entity_id].erase(T::GetTypeID());
+  map_[entity_id].erase(T::type_id);
   return make_result::Ok();
 }
 
 template<typename T>
 Result<T*> ComponentManager::GetComponent(const EntityID entity_id) {
-  if (map_[entity_id].count(T::GetTypeID()) == 0) {
+  if (map_[entity_id].count(T::type_id) == 0) {
     return make_result::Fail(NOT_FOUND);
   }
-  return make_result::Ok(dynamic_cast<T*>(map_[entity_id][T::GetTypeID()]));
+  return make_result::Ok(static_cast<T*>(map_[entity_id][T::type_id]));
 }
 
 #endif //EFFECTIVE_BROCOLLI_COMPONENTMANAGER_HPP

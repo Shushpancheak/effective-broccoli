@@ -8,15 +8,17 @@ enum {
   SYSTEM_NULL = 0,
   SYSTEM_GRAPHICAL,
   SYSTEM_PHYSICAL,
+  SYSTEM_TRANSFORM,
   SYSTEM_MAX
 };
 
 using EventPtr = Event*;
+
 class System {
 public:
-  // static const TypeID type_id; -- add in children
+  static const TypeID type_id = SYSTEM_NULL; // -- add in children
 
-  virtual ~System();
+  virtual ~System() = default;
   virtual void Accept(EventPtr event_ptr) = 0;
           void UpdateBase();
 

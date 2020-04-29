@@ -9,6 +9,7 @@
 
 #include "constants/error.hpp"
 #include "support/result.hpp"
+#include "constants/defaults.hpp"
 
 //TODO make abstract class Resource.
 class ResourceManager {
