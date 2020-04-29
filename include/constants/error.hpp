@@ -33,7 +33,7 @@ enum ErrorCode : int {
 inline std::string GetErrorMsg(const int errc) {
   switch (errc) {
   case ErrorCode::ALL_OK:
-    return "All ok, false alert)";
+    return "All ok, false alarm)";
 
   case ErrorCode::FALSE_TYPE:
     return "Types don't match.";
