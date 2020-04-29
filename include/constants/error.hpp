@@ -16,6 +16,7 @@
   }
 
 enum ErrorCode : int {
+  ALL_OK,
   FALSE_TYPE = 1,
   CTOR_FAILED,
   BAD_PTR,
@@ -31,6 +32,9 @@ enum ErrorCode : int {
 
 inline std::string GetErrorMsg(const int errc) {
   switch (errc) {
+  case ErrorCode::ALL_OK:
+    return "All ok, false alert)";
+
   case ErrorCode::FALSE_TYPE:
     return "Types don't match.";
 

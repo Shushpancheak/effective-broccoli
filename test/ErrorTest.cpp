@@ -1,5 +1,5 @@
 #include "components/Component.hpp"
-#include "managers//ComponentManager.hpp"
+#include "managers/ComponentManager.hpp"
 #include "constants/error.hpp"
 
 struct TestComponent : Component<TestComponent> {};

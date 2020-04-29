@@ -12,7 +12,7 @@ project (
   DESCRIPTION ""
 )
 
-include_directories(include)
+include_directories("include")
 
 set (
   SOURCES
@@ -46,7 +46,6 @@ set (
   include/components/GraphicalComponent.hpp
   #include/components/PhysicalComponent.hpp
   include/components/TransformComponent.hpp
-
   include/systems/System.hpp
   include/systems/PhysicalSystem.hpp
   
@@ -100,7 +99,6 @@ include_directories(${gtest_SOURCE_DIR})
 set(UNIT_TESTS_NAME "run-tests-${PROJECT_NAME}")
 set(UNIT_TESTS_FILE
         "test/test.cpp"
-        "test/QuadTreeTest.cpp"
 )
 
 add_executable(${UNIT_TESTS_NAME} ${UNIT_TESTS_FILE} ${HEADERS} ${SOURCES})
