@@ -40,7 +40,7 @@ class PhysicalComponent : public Component {
    */
   void RevertHitbox(double dt);
 
- private:
+ //private:
   static constexpr double EPS = 1e-7;
   sf::Rect<float> hitbox_;
   sf::Vector2f velocity_;

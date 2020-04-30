@@ -21,7 +21,11 @@ public:
 
     REPORT_IF_ERROR(
       bro::GetComponentManager()->
-        AddComponent<PhysicalComponent>(entity_id, {0, 0, 10, 10}, 1, PhysicalGroup::DynamicObject));
+        AddComponent<PhysicalComponent>(
+          entity_id, sf::Rect<float>({0, 0, 10, 10}), 1, PhysicalGroup::DynamicObject)
+        );
+    bro::GetComponentManager()->
+      GetComponent<PhysicalComponent>(entity_id).ValueUnsafe()->force_ = {1, 1};
 
     GraphicalSystem* graphical_sys =
       dynamic_cast<GraphicalSystem*>(
