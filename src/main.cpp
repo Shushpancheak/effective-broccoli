@@ -24,9 +24,8 @@ int main() {
 
     bro::GetWindow()->clear();
 
-    auto graph_sys = bro::GetSystemManager()->GetSystem(GraphicalSystem::type_id);
-    graph_sys.ThrowIfError();
-    graph_sys.ValueUnsafe()->UpdateBase();
+    bro::GetSystemManager()->GetSystem(GraphicalSystem::type_id).ValueUnsafe()->UpdateBase();
+    bro::GetSystemManager()->GetSystem(PhysicalSystem::type_id) .ValueUnsafe()->UpdateBase();
     bro::GetEventManager()->RunFor(time_for_frame / 10);
 
     std::this_thread::sleep_for(9 * time_for_frame / 10);

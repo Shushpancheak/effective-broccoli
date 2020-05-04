@@ -21,7 +21,7 @@ class DataChunk : public IntrusiveNode<DataChunk> {
 
 public:
   explicit DataChunk(size_t object_size, TypeID type_id,
-                        size_t object_count = 100);
+                     size_t object_count = 100);
   ~DataChunk();
 
   DataChunk(const DataChunk& other) = delete;
@@ -112,6 +112,8 @@ public:
    */
   [[nodiscard]] TypeID GetTypeID() const;
 
+
+
 private:
   /**
    * Construct the item of type T with args.
@@ -170,6 +172,57 @@ private:
 
   // Not really needed, but it can greatly optimize IsEmpty().
   size_t size_;
+
+// Iterators
+public:
+  template<typename T>
+  class Iterator {
+  public:
+    using difference_type = ptrdiff_t;
+    using value_type = T;
+    using pointer = const T*;
+    using reference = const T&;
+    using iterator_category = std::forward_iterator_tag;
+
+    Iterator(T* ptr) : ptr_(ptr) {}
+
+    Iterator& operator++() {
+      do {
+        ++ptr_;
+      } while (!DataChunk::IsAvailable(ptr_));
+      return *this;
+    }
+
+    Iterator operator++(int) {
+      Iterator res = *this; ++(*this); return res;
+    }
+
+    bool operator==(const Iterator& other) const {
+      return ptr_ == other.ptr_;
+    }
+
+    bool operator!=(const Iterator& other) const {
+      return ptr_ != other.ptr_;
+    }
+
+    T operator*() {
+      return *ptr_;
+    }
+
+  private:
+    T* ptr_;
+  };
+
+  template<typename T>
+  Iterator<T> begin() {
+    return Iterator<T>(buffer_start_);
+  }
+
+  
+  template<typename T>
+  Iterator<T> end() {
+    return Iterator<T>(buffer_end_);
+  }
 };
 
 template<typename T, typename ... Args>

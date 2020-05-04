@@ -5,8 +5,9 @@
 #include "support/IntrusiveList.hpp"
 #include "memory/DataChunk.hpp"
 #include "support/result.hpp"
+#include "support/typedefs.hpp"
 
-//TODO template<MaxTypeId>
+template<TypeID type_max>
 class ObjectPool {
   const size_t DEFAULT_CHUNK_OBJECT_COUNT = 100;
   using Chunk = DataChunk;
@@ -49,6 +50,8 @@ public:
    * rewrites memory pointed to by data_ptr, thus making the space available
    * for using later.
    *
+   * @warning VERY slow. (iterates over all data chunks)
+   *
    * @returb Error Codes:
    * NOT_FOUND - data pointed to by data_ptr is not found in any of chunks.
    */
@@ -60,27 +63,30 @@ public:
   void SetObjectCountInChunk(size_t count);
 
 private:
-  IntrusiveList<DataChunk> chunks_;
+  IntrusiveList<DataChunk> lists_[type_max];
   size_t cur_chunks_obj_count_;
 };
 
-inline ObjectPool::ObjectPool()
-  : chunks_()
+template<TypeID type_max>
+inline ObjectPool<type_max>::ObjectPool()
+  : lists_{}
   , cur_chunks_obj_count_(DEFAULT_CHUNK_OBJECT_COUNT) {}
 
-inline void ObjectPool::SetObjectCountInChunk(size_t count) {
+template<TypeID type_max>
+inline void ObjectPool<type_max>::SetObjectCountInChunk(size_t count) {
   cur_chunks_obj_count_ = count;
 }
 
+template<TypeID type_max>
 template<typename T, typename ... Args>
-Result<T*> ObjectPool::CreateObject(Args&&... args) {
+Result<T*> ObjectPool<type_max>::CreateObject(Args&&... args) {
   static_assert(sizeof(T) >= sizeof(uint64_t)); // T must be at least one word long.
   static_assert(T::type_id || !T::type_id); // T should have a static type_id field.
 
-  for (auto& chunk : chunks_) {
-    if (chunk.GetTypeID() == T::type_id && !chunk.IsFull()) {
-      auto res_ptr = chunk.Add<T>(std::forward<Args>(args)...);
-      if (!res_ptr.HasError()) {
+  for (auto& chunk : lists_[T::type_id]) {
+    if (!chunk.IsFull()) {
+      auto res_ptr = chunk.template Add<T>(std::forward<Args>(args)...);
+      if (res_ptr.IsOk()) {
         return res_ptr;
       }
     }
@@ -88,19 +94,45 @@ Result<T*> ObjectPool::CreateObject(Args&&... args) {
 
   Chunk* new_chunk = new Chunk(sizeof(T), T::type_id, cur_chunks_obj_count_);
 
-  chunks_.PushFront(new_chunk);
-  return chunks_.begin()->Add<T>(std::forward<Args>(args)...);
+  lists_[T::type_id].PushFront(new_chunk);
+  return lists_[T::type_id].begin()->template Add<T>(std::forward<Args>(args)...);
 }
 
+template<TypeID type_max>
 template<typename T>
-Status ObjectPool::DeleteObject(T* obj_ptr) {
-  for (auto& chunk : chunks_) {
+Status ObjectPool<type_max>::DeleteObject(T* obj_ptr) {
+  for (auto& chunk : lists_[T::type_id]) {
     if (chunk.GetPresentStatus(obj_ptr).IsOk()) {
-      return chunk.Delete<T>(obj_ptr);
+      return chunk.template Delete<T>(obj_ptr);
     }
   }
 
   return make_result::Fail(NOT_FOUND);
 }
+
+template<TypeID type_max>
+ObjectPool<type_max>::~ObjectPool() {
+  for (auto& chunks_ : lists_) {
+    while (!chunks_.IsEmpty()) {
+      Chunk* chunk = chunks_.PopFront();
+      delete chunk;
+    }
+  }
+}
+
+template<TypeID type_max>
+Status ObjectPool<type_max>::Free(void* data_ptr) {
+  for (auto& chunks_ : lists_) {
+    for (auto& chunk : chunks_) {
+      if (chunk.GetPresentStatus(data_ptr).IsOk()) {
+        chunk.HardDelete(data_ptr);
+        return make_result::Ok();
+      }
+    }
+  }
+
+  return make_result::Fail(NOT_FOUND);
+}
+
 
 #endif // EFFECTIVE_BROCOLLI_OBJECT_POOL

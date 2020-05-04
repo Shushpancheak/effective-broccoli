@@ -24,6 +24,8 @@ public:
         AddComponent<PhysicalComponent>(
           entity_id, sf::Rect<float>({0, 0, 10, 10}), 1, PhysicalGroup::DynamicObject)
         );
+    PhysicalSystem* phys_sys = static_cast<PhysicalSystem*>(bro::GetSystemManager()->GetSystem(PhysicalSystem::type_id).ValueUnsafe());
+    phys_sys->AddMovingEntity(entity_id);
     bro::GetComponentManager()->
       GetComponent<PhysicalComponent>(entity_id).ValueUnsafe()->force_ = {1, 1};
 

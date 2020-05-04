@@ -21,6 +21,8 @@ class PhysicalSystem : public System {
 
   PhysicalSystem();
 
+  void AddMovingEntity(const EntityID entity_id);
+
   // int AddEntity(PhysicalComponent *component, int group);
   // int DeleteEntity(PhysicalComponent *component, int group);
 

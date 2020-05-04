@@ -37,6 +37,10 @@ PhysicalSystem::PhysicalSystem()
   , dynamic_objects_(defaults::WORLD_BOUNDARY)
   , moving_objects_() {}
 
+void PhysicalSystem::AddMovingEntity(const EntityID entity_id) {
+  moving_objects_.insert(entity_id);
+}
+
 void PhysicalSystem::Accept(EventPtr event_ptr) {}
 
 void PhysicalSystem::Update(Duration delta_time) {

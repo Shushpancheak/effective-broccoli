@@ -8,6 +8,8 @@
 #include "Component.hpp"
 #include "support/time.hpp"
 
+#include "engine/core.hpp"
+
 enum class PhysicalGroup {
   StaticObject,
   DynamicObject,

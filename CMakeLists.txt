@@ -12,7 +12,7 @@ project (
   DESCRIPTION ""
 )
 
-include_directories("include")
+include_directories(include)
 
 set (
   SOURCES
@@ -28,7 +28,7 @@ set (
   src/EventManager.cpp
   src/SystemManager.cpp
 
-  src/ObjectPool.cpp
+  
   src/DataChunk.cpp
   
   src/GraphicalSystem.cpp

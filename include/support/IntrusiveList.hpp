@@ -11,11 +11,11 @@ class IteratorImpl {
   using Iterator = IteratorImpl<NodeT, ItemT>;
 
 public:
-  using ValueType = ItemT;
-  using Pointer = ValueType*;
-  using Reference = ValueType&;
-  using DifferenceType = ptrdiff_t;
-  using IteratorCategory = std::forward_iterator_tag;
+  using value_type = ItemT;
+  using pointer = ValueType*;
+  using reference = ValueType&;
+  using difference_type = ptrdiff_t;
+  using iterator_category = std::forward_iterator_tag;
 
 public:
   IteratorImpl(NodeT* start, NodeT* end) : current_(start), end_(end) {
