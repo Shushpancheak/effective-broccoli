@@ -57,10 +57,11 @@ private:
 template<typename T>
 class IntrusiveList {
   using Node = IntrusiveNode<T>;
+
+public:
   using Iterator = intrusive_iterator::IteratorImpl<Node, T>;
   using ConstIterator = intrusive_iterator::IteratorImpl<const Node, const T>;
 
-public:
   IntrusiveList();
   ~IntrusiveList();
   IntrusiveList(IntrusiveList&& other) noexcept;

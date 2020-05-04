@@ -65,6 +65,58 @@ public:
 private:
   IntrusiveList<DataChunk> lists_[type_max];
   size_t cur_chunks_obj_count_;
+
+// Iterator
+public:
+  template<typename T>
+  class Iterator {
+  public:
+    using difference_type = ptrdiff_t;
+    using value_type = T;
+    using pointer = const T*;
+    using reference = const T&;
+    using iterator_category = std::forward_iterator_tag;
+
+    explicit Iterator(IntrusiveList<DataChunk>& chunks)
+      : list_(&chunks)
+      , chunks_iter_(chunks.begin())
+      , cur_chunk_iter_(chunks_iter_ == chunks.end() ? nullptr : chunks_iter_->begin<T>()){}
+
+    Iterator& operator++() {
+      ++cur_chunk_iter_;
+      if (cur_chunk_iter_ == chunks_iter_->end<T>()) {
+        ++chunks_iter_;
+        if (chunks_iter_ == list_->end()) {
+          chunks_iter_ = DataChunk::Iterator<T>(nullptr);
+        }
+      }
+      
+      return *this;
+    }
+
+    Iterator operator++(int) {
+      Iterator<T> iter = *this;
+      ++(*this);
+      return iter;
+    }
+
+    bool operator==(const Iterator& other) const {
+      return cur_chunk_iter_ == other.cur_chunk_iter_;
+    }
+
+    bool operator!=(const Iterator& other) const {
+      return cur_chunk_iter_ != other.cur_chunk_iter_;
+    }
+
+    T operator*() {
+      return *cur_chunk_iter_;
+    }
+
+  private:
+    IntrusiveList<DataChunk>* list_;
+    IntrusiveList<DataChunk>::Iterator chunks_iter_;
+    DataChunk::Iterator<T> cur_chunk_iter_;
+  };
 };
 
 template<TypeID type_max>

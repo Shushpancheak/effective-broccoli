@@ -14,6 +14,8 @@ DataChunk::DataChunk(
   buffer_start_ = new char[object_size * (object_count_ + 1)];
   buffer_end_ = buffer_start_ + (object_count_ + 1) * object_size_;
   Free(buffer_start_, object_count_ + 1);
+
+  Construct<size_t>(buffer_end_, NON_EMPTY_MEMORY_BYTES).ThrowIfError();
 }
 
 DataChunk::~DataChunk() {

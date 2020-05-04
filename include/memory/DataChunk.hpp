@@ -112,8 +112,6 @@ public:
    */
   [[nodiscard]] TypeID GetTypeID() const;
 
-
-
 private:
   /**
    * Construct the item of type T with args.
@@ -163,6 +161,7 @@ private:
 // Fields
 private:
   static const size_t EMPTY_MEMORY_BYTES = 0xDEADBEEF;
+  static const size_t NON_EMPTY_MEMORY_BYTES = 0xBEEFDEAD; // must not be equal to empty bytes
 
   char* buffer_start_;
   char* buffer_end_; // Points to memory just outside the buffer.
@@ -184,17 +183,24 @@ public:
     using reference = const T&;
     using iterator_category = std::forward_iterator_tag;
 
-    Iterator(T* ptr) : ptr_(ptr) {}
+    explicit Iterator(T* ptr)
+      : ptr_(ptr) {
+      while (DataChunk::IsAvailable(ptr_)) {
+        ++ptr_;
+      }
+    }
 
     Iterator& operator++() {
       do {
         ++ptr_;
-      } while (!DataChunk::IsAvailable(ptr_));
+      } while (DataChunk::IsAvailable(ptr_));
       return *this;
     }
 
     Iterator operator++(int) {
-      Iterator res = *this; ++(*this); return res;
+      Iterator res = *this;
+      ++(*this);
+      return res;
     }
 
     bool operator==(const Iterator& other) const {
