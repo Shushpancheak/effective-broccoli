@@ -42,7 +42,7 @@ public:
   Status DeleteSystem();
 
 private:
-  ObjectPool system_pool_;
+  ObjectPool<SYSTEM_MAX> system_pool_;
   std::unordered_map<SystemID, SystemPtr> map_;
 };
 

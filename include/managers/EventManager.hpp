@@ -41,7 +41,7 @@ public:
   Status Unsubscribe(SystemID sys_id, EventID event_id);
 
 private:
-  ObjectPool events_pool_;
+  ObjectPool<EVENT_MAX> events_pool_;
   std::queue<EventPtr> events_queue_{};
   std::unordered_multimap<EventID, SystemID> subscribed_systems_map_{};
   SystemManager* system_man_ptr;

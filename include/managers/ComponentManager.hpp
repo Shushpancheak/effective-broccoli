@@ -33,7 +33,7 @@ public:
 
   Status DeleteAllComponents(EntityID entity_id);
 private:
-  ObjectPool component_pool_;
+  ObjectPool<COMPONENT_MAX> component_pool_;
   std::unordered_map<EntityID, std::unordered_map<ComponentID, ComponentPtr>> map_;
 };
 

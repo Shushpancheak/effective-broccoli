@@ -26,7 +26,7 @@ public:
 private:
   static EntityID current_id_;
   std::unordered_map<EntityID, EntityPtr> map_;
-  ObjectPool entity_pool_;
+  ObjectPool<ENTITY_MAX> entity_pool_;
 };
 
 inline EntityID EntityManager::current_id_ = 0;
