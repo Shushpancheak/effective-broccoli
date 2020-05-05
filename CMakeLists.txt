@@ -16,8 +16,6 @@ include_directories(include)
 
 set (
   SOURCES
-  src/main.cpp
-
   src/GraphicalComponent.cpp
   src/TransformComponent.cpp
   src/PhysicalComponent.cpp

@@ -12,10 +12,10 @@ DataChunk::DataChunk(
 
   // An extra +1 object for proper end(), which would point to the end of the buffer.
   buffer_start_ = new char[object_size * (object_count_ + 1)];
-  buffer_end_ = buffer_start_ + (object_count_ + 1) * object_size_;
-  Free(buffer_start_, object_count_ + 1);
+  buffer_end_ = buffer_start_ + object_count_ * object_size_;
+  Free(buffer_start_, object_count_);
 
-  Construct<size_t>(buffer_end_, NON_EMPTY_MEMORY_BYTES).ThrowIfError();
+  *reinterpret_cast<size_t*>(buffer_end_) = NON_EMPTY_MEMORY_BYTES;
 }
 
 DataChunk::~DataChunk() {

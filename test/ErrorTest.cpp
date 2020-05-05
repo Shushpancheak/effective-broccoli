@@ -2,7 +2,13 @@
 #include "managers/ComponentManager.hpp"
 #include "constants/error.hpp"
 
-struct TestComponent : Component<TestComponent> {};
+struct TestComponent : Component {
+  static const ComponentID type_id = 1;
+  size_t padding = 0;
+
+  TestComponent(const EntityID owner)
+    : Component(owner) {}
+};
 
 TEST(Error, NotFound) {
   ComponentManager test;

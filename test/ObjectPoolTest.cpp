@@ -16,8 +16,7 @@ enum {
 
 class FakeInt {
 public:
-  static size_t id;
-  static size_t GetTypeID() { return id; }
+  static const TypeID type_id = 0;
   explicit FakeInt(const int integer) : integer_(integer) {}
 
   operator int() const {
@@ -29,11 +28,9 @@ private:
   int padding_for_pool_ = 0;
 };
 
-size_t FakeInt::id = 0;
-
 
 TEST(ObjectPool, CreateFakeInt) {
-  ObjectPool test;
+  ObjectPool<100> test;
 
   const FakeInt* first  = test.CreateObject<FakeInt>(FakeInt(7));
   const FakeInt* second = test.CreateObject<FakeInt>(consts::SECOND_INT);
@@ -44,7 +41,7 @@ TEST(ObjectPool, CreateFakeInt) {
 
 
 inline void stress_test(int size) {
-  ObjectPool pool;
+  ObjectPool<100> pool;
   std::vector<FakeInt*> int_ptrs(size);
 
   for (int i = 0; i < size; ++i) {
