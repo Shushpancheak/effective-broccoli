@@ -48,8 +48,7 @@ void PhysicalSystem::Update(Duration delta_time) {
 
   for (const auto moving_obj: moving_objects_) {
     auto component_res =
-      bro::GetComponentManager()->
-        GetComponent<PhysicalComponent>(moving_obj);
+      bro::GetComponent<PhysicalComponent>(moving_obj);
     REPORT_IF_ERROR(component_res);
 
     auto* component = component_res.ValueUnsafe();

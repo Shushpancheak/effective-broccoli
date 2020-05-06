@@ -79,6 +79,11 @@ namespace bro {
     return detail::component_man.PtrUnsafe()->
              AddComponent<T>(entity_id, std::forward<Args>(args)...);
   }
+
+  template<typename T, typename... Args>
+  inline Status RegisterEvent(Args&&... args) {
+    return detail::event_man.PtrUnsafe()->RegisterEvent<T>(std::forward<Args>(args)...);
+  }
 }
 
 #endif
