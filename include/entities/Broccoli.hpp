@@ -16,33 +16,24 @@ public:
   BroccoliEntity(const EntityID entity_id)
     : Entity(entity_id) {
     REPORT_IF_ERROR(
-      bro::GetComponentManager()->
-        AddComponent<TransformComponent>(entity_id, nullptr));
-
+      bro::AddComponent<TransformComponent>(entity_id, nullptr)
+    );
     REPORT_IF_ERROR(
-      bro::GetComponentManager()->
-        AddComponent<PhysicalComponent>(
-          entity_id, sf::Rect<float>({0, 0, 10, 10}), 1, PhysicalGroup::DynamicObject)
-        );
-    bro::GetSystem<PhysicalSystem>()->AddMovingEntity(entity_id);
-    bro::GetComponentManager()->
-      GetComponent<PhysicalComponent>(entity_id).ValueUnsafe()->force_ = {1, 1};
-
+      bro::AddComponent<PhysicalComponent>(
+        entity_id,
+        sf::Rect<float>({0, 0, 10, 10}), 1, PhysicalGroup::DynamicObject
+      )
+    );
     REPORT_IF_ERROR(
-      bro::GetComponentManager()->
-        AddComponent<GraphicalComponent>(
-          entity_id,
-          bro::GetSystem<GraphicalSystem>()->GetMiddle()
-        )
+      bro::AddComponent<GraphicalComponent>(
+        entity_id,
+        bro::GetSystem<GraphicalSystem>()->GetMiddle()
+      )
     );
 
-    auto graphical_component =
-      bro::GetComponentManager()->
-        GetComponent<GraphicalComponent>(entity_id);
-
-    graphical_component.ThrowIfError();
-
-    graphical_component.ValueUnsafe()->sprite.setTexture(
+    bro::GetSystem<PhysicalSystem>()->AddMovingEntity(entity_id);
+    bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->force_ = {1, 1};
+    bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.setTexture(
       bro::GetResourceManager()->Get("img/effective-broccoli.png")
     );
   }

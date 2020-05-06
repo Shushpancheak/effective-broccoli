@@ -19,6 +19,9 @@ public:
   template<typename T>
   Result<T*> GetComponent(EntityID entity_id);
 
+  template<typename T>
+  T* GetComponentUnsafe(const EntityID entity_id);
+
   /**
    * @return ALLOC_FAILED if object pool is full.
    */
@@ -66,6 +69,12 @@ Result<T*> ComponentManager::GetComponent(const EntityID entity_id) {
     return make_result::Fail(NOT_FOUND);
   }
   return make_result::Ok(static_cast<T*>(map_[entity_id][T::type_id]));
+}
+
+template<typename T>
+T* ComponentManager::GetComponentUnsafe(const EntityID entity_id) {
+  assert(map_[entity_id].count(T::type_id) != 0);
+  return static_cast<T*>(map_[entity_id][T::type_id]);
 }
 
 #endif //EFFECTIVE_BROCOLLI_COMPONENTMANAGER_HPP

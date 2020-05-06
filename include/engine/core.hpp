@@ -63,6 +63,22 @@ namespace bro {
   inline System* GetSystem(const SystemID sys_id) {
     return detail::system_man.PtrUnsafe()->GetSystem(sys_id);
   }
+
+  template<typename T>
+  inline T* GetComponentUnsafe(const EntityID entity_id) {
+    return detail::component_man.PtrUnsafe()->GetComponentUnsafe<T>(entity_id);
+  }
+
+  template<typename T>
+  inline Result<T*> GetComponent(const EntityID entity_id) {
+    return detail::component_man.PtrUnsafe()->GetComponent<T>(entity_id);
+  }
+
+  template<typename T, typename ...Args>
+  inline Status AddComponent(const EntityID entity_id, Args&&... args) {
+    return detail::component_man.PtrUnsafe()->
+             AddComponent<T>(entity_id, std::forward<Args>(args)...);
+  }
 }
 
 #endif
