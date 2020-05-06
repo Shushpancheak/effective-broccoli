@@ -183,8 +183,11 @@ public:
     using reference = const T&;
     using iterator_category = std::forward_iterator_tag;
 
-    explicit Iterator(T* ptr)
-      : ptr_(ptr) {
+    explicit Iterator(void* ptr)
+      : ptr_(static_cast<T*>(ptr)) {
+      if (ptr == nullptr) {
+        return;
+      }
       while (DataChunk::IsAvailable(ptr_)) {
         ++ptr_;
       }
@@ -213,6 +216,19 @@ public:
 
     T operator*() {
       return *ptr_;
+    }
+
+    T* operator->() {
+      return ptr_;
+    }
+
+    Iterator& operator=(const Iterator& other) {
+      if (this == &other) {
+         return *this;
+      }
+
+      ptr_ = other.ptr_;
+      return *this;
     }
 
   private:

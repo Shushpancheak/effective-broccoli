@@ -77,17 +77,22 @@ public:
     using reference = const T&;
     using iterator_category = std::forward_iterator_tag;
 
-    explicit Iterator(IntrusiveList<DataChunk>& chunks)
+    explicit Iterator(IntrusiveList<DataChunk>& chunks,
+                      IntrusiveList<DataChunk>::Iterator cur_chunk)
       : list_(&chunks)
-      , chunks_iter_(chunks.begin())
-      , cur_chunk_iter_(chunks_iter_ == chunks.end() ? nullptr : chunks_iter_->begin<T>()){}
+      , chunks_iter_(cur_chunk)
+      , cur_chunk_iter_(chunks_iter_ == chunks.end()    ?
+                        DataChunk::Iterator<T>(nullptr) :
+                        chunks_iter_->begin<T>()) {}
 
     Iterator& operator++() {
       ++cur_chunk_iter_;
       if (cur_chunk_iter_ == chunks_iter_->end<T>()) {
         ++chunks_iter_;
         if (chunks_iter_ == list_->end()) {
-          chunks_iter_ = DataChunk::Iterator<T>(nullptr);
+          cur_chunk_iter_ = DataChunk::Iterator<T>(nullptr);
+        } else {
+          cur_chunk_iter_ = chunks_iter_->begin<T>();
         }
       }
       
@@ -112,11 +117,25 @@ public:
       return *cur_chunk_iter_;
     }
 
+    T* operator->() {
+      return cur_chunk_iter_.operator->();
+    }
+
   private:
     IntrusiveList<DataChunk>* list_;
     IntrusiveList<DataChunk>::Iterator chunks_iter_;
     DataChunk::Iterator<T> cur_chunk_iter_;
   };
+
+  template<typename T>
+  Iterator<T> begin() {
+    return Iterator<T>(lists_[T::type_id], lists_[T::type_id].begin());
+  }
+
+  template<typename T>
+  Iterator<T> end() {
+    return Iterator<T>(lists_[T::type_id], lists_[T::type_id].end());
+  }
 };
 
 template<TypeID type_max>

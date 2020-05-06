@@ -1,6 +1,8 @@
 #ifndef EFFECTIVE_BROCCOLI_DEFAULTS_HPP
 #define EFFECTIVE_BROCCOLI_DEFAULTS_HPP
 
+#include "SFML/Graphics/Rect.hpp"
+
 namespace defaults {
 
 enum {
