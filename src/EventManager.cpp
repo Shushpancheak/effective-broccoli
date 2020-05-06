@@ -18,11 +18,7 @@ void EventManager::RunFor(const Duration duration) {
     auto iter = iter_pair.first;
     auto end = iter_pair.second;
     for (; iter != end; ++iter) {
-      auto system = system_man_ptr->GetSystem(iter->second);
-
-      system.ThrowIfError();
-
-      system.ValueUnsafe()->Accept(event_ptr);
+      system_man_ptr->GetSystem(iter->second)->Accept(event_ptr);
     }
 
     auto res = events_pool_.Free(static_cast<void*>(event_ptr));

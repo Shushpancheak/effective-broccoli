@@ -54,6 +54,15 @@ namespace bro {
   inline SystemManager* GetSystemManager() {
     return detail::system_man.PtrUnsafe();
   }
+
+  template<typename T>
+  inline T* GetSystem() {
+    return detail::system_man.PtrUnsafe()->GetSystem<T>();
+  }
+
+  inline System* GetSystem(const SystemID sys_id) {
+    return detail::system_man.PtrUnsafe()->GetSystem(sys_id);
+  }
 }
 
 #endif
