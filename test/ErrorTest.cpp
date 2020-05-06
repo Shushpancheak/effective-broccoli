@@ -15,7 +15,7 @@ TEST(Error, NotFound) {
   auto res = test.GetComponent<TestComponent>(0);
   ASSERT_TRUE(res.HasError());
   ASSERT_EQ(res.Error().value(), NOT_FOUND);
-  ASSERT_EQ(res.Error().message(), "Object was not found.");
+  ASSERT_EQ(res.Error().message(), "Object not found.");
   (void)test.AddComponent<TestComponent>(0);
   res = test.GetComponent<TestComponent>(0);
   ASSERT_TRUE(res.IsOk());
