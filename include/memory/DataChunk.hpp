@@ -214,7 +214,7 @@ public:
       return ptr_ != other.ptr_;
     }
 
-    T operator*() {
+    T& operator*() {
       return *ptr_;
     }
 
@@ -222,8 +222,12 @@ public:
       return ptr_;
     }
 
-    Iterator& operator=(const Iterator& other) {
-      if (this == &other) {
+    operator T*() {
+      return ptr_;
+    }
+
+    Iterator& operator=(const Iterator& other) {  // NOLINT(bugprone-unhandled-self-assignment)
+      if (&other == this) {
          return *this;
       }
 
@@ -336,7 +340,7 @@ Status DataChunk::DeleteIfPresent(T* item_ptr, size_t count) {
   return make_result::Ok();
 }
 
-template<typename T, typename ... Args>
+template<typename T, typename ...Args>
 Status DataChunk::Construct(void* item_addr, Args&&... args) {
   OP_ASSERT_IN_BUFFER_RANGE(item_addr);
   OP_ASSERT_ADDRESS_ALIGNED(item_addr);

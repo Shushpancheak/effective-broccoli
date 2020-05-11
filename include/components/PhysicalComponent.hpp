@@ -23,25 +23,6 @@ class PhysicalComponent : public Component {
 
   PhysicalComponent(const EntityID owner, sf::Rect<float> hitbox_, float mass_, PhysicalGroup group);
 
-  sf::FloatRect GetHitbox() const;
-
-  /**
-   * Returns time that is needed for first collision of object to this one.
-   */
-  double TrackCollision(const PhysicalComponent& object, double dt) const;
-
-  /**
-   * Update hitbox by implicit Euler integration
-   * @param dt delta time
-   */
-  void UpdateHitbox(double dt);
-
-  /**
-   * Revert hitbox by time dt.
-   * @param dt delta time
-   */
-  void RevertHitbox(double dt);
-
  //private:
   static constexpr double EPS = 1e-7;
   sf::Rect<float> hitbox_;

@@ -21,7 +21,7 @@ public:
     REPORT_IF_ERROR(
       bro::AddComponent<PhysicalComponent>(
         entity_id,
-        sf::Rect<float>({0, 0, 10, 10}), 1, PhysicalGroup::DynamicObject
+        sf::Rect<float>(), 1, PhysicalGroup::DynamicObject
       )
     );
     REPORT_IF_ERROR(
@@ -31,11 +31,12 @@ public:
       )
     );
 
-    bro::GetSystem<PhysicalSystem>()->AddMovingEntity(entity_id);
-    bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->force_ = {1, 1};
     bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.setTexture(
       bro::GetResourceManager()->Get("img/effective-broccoli.png")
     );
+    bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->force_ = {1, 1};
+    bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->hitbox_ =
+      bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.getGlobalBounds();
   }
 
 private:

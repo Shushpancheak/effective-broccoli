@@ -35,6 +35,13 @@ public:
   Status DeleteComponent(EntityID entity_id);
 
   Status DeleteAllComponents(EntityID entity_id);
+
+  template<typename T>
+  auto GetIteratorBegin() -> decltype(auto);
+
+  template<typename T>
+  auto GetIteratorEnd() -> decltype(auto);
+
 private:
   ObjectPool<COMPONENT_MAX> component_pool_;
   std::unordered_map<EntityID, std::unordered_map<ComponentID, ComponentPtr>> map_;
@@ -61,6 +68,16 @@ Status ComponentManager::DeleteComponent(const EntityID entity_id) {
   }
   map_[entity_id].erase(T::type_id);
   return make_result::Ok();
+}
+
+template<typename T>
+auto ComponentManager::GetIteratorBegin() -> decltype(auto) {
+  return component_pool_.begin<T>();
+}
+
+template<typename T>
+auto ComponentManager::GetIteratorEnd() -> decltype(auto) {
+  return component_pool_.end<T>();
 }
 
 template<typename T>

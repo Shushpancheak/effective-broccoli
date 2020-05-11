@@ -5,6 +5,11 @@
 #include <support/result.hpp>
 #include "systems/PhysicalSystem.hpp"
 
+
+PhysicalSystem::PhysicalSystem()
+  : static_objects_(defaults::WORLD_BOUNDARY)
+  , dynamic_objects_(defaults::WORLD_BOUNDARY) {}
+
 Result<EntityID> PhysicalSystem::CorrectHitbox(PhysicalComponent &obj, double dt) const {
   auto all_intersects = static_objects_.findAllntersectionsWithBox(obj.hitbox_);
   double min_time = 1e10;
@@ -17,7 +22,7 @@ Result<EntityID> PhysicalSystem::CorrectHitbox(PhysicalComponent &obj, double dt
 
     CHECK_ERROR(ph_comp);
 
-    const double cur_time = ph_comp.ValueUnsafe()->TrackCollision(obj, dt);
+    const double cur_time = TrackCollision(ph_comp.ValueUnsafe(), obj, dt);
 
     if (cur_time < min_time) {
       min_time = cur_time;
@@ -25,20 +30,12 @@ Result<EntityID> PhysicalSystem::CorrectHitbox(PhysicalComponent &obj, double dt
     }
   }
 
-  obj.RevertHitbox(dt - min_time);
+  RevertHitbox(&obj, dt - min_time);
+
   if (min_ent != NO_ENTITY)
     return make_result::Ok(min_ent);
 
   return make_result::Fail(NOT_FOUND);
-}
-
-PhysicalSystem::PhysicalSystem()
-  : static_objects_(defaults::WORLD_BOUNDARY)
-  , dynamic_objects_(defaults::WORLD_BOUNDARY)
-  , moving_objects_() {}
-
-void PhysicalSystem::AddMovingEntity(const EntityID entity_id) {
-  moving_objects_.insert(entity_id);
 }
 
 void PhysicalSystem::Accept(EventPtr event_ptr) {}
@@ -46,18 +43,18 @@ void PhysicalSystem::Accept(EventPtr event_ptr) {}
 void PhysicalSystem::Update(Duration delta_time) {
   double dt = DurationToDouble(delta_time);
 
-  for (const auto moving_obj: moving_objects_) {
-    auto component_res =
-      bro::GetComponent<PhysicalComponent>(moving_obj);
-    REPORT_IF_ERROR(component_res);
+  auto* comp_man = bro::GetComponentManager();
 
-    auto* component = component_res.ValueUnsafe();
+  for (auto component_it =
+       comp_man->GetIteratorBegin<PhysicalComponent>();
+       component_it != comp_man->GetIteratorEnd<PhysicalComponent>();
+       ++component_it) {
 
-    dynamic_objects_.erase(component->hitbox_, moving_obj);
-    component->UpdateHitbox(dt);
-    dynamic_objects_.insert(component->hitbox_, moving_obj);
+    dynamic_objects_.erase(component_it->hitbox_, component_it->entity_id);
+    UpdateHitbox(component_it, dt);
+    dynamic_objects_.insert(component_it->hitbox_, component_it->entity_id);
 
-    auto collided = CorrectHitbox(*component, dt);
+    auto collided = CorrectHitbox(*component_it, dt);
     if (collided.IsOk()) {
       std::cout << "wall hit" << std::endl;
       // bro::GetEventManager()->sendMessage<CollisionMessage>(moving_object, colided);
@@ -67,4 +64,34 @@ void PhysicalSystem::Update(Duration delta_time) {
   for (const auto &pair : dynamic_objects_.findAllIntersections()) {
     // EventManager.sendMessage<CollisionMessage>(pair);
   }
+}
+
+void PhysicalSystem::UpdateHitbox(PhysicalComponent* obj, const double dt) {
+  obj->velocity_ += obj->force_ / obj->mass_;
+  const auto offset = obj->velocity_ * static_cast<float>(dt);
+  obj->hitbox_ = obj->hitbox_ + offset;
+
+  REPORT_IF_ERROR(bro::RegisterEvent<MoveEvent>(obj->entity_id, offset));
+}
+
+void PhysicalSystem::RevertHitbox(PhysicalComponent* obj, const double dt) {
+  obj->hitbox_ = obj->hitbox_ + obj->velocity_ * static_cast<float>(dt);
+}
+
+double PhysicalSystem::TrackCollision(
+    PhysicalComponent* this_obj,
+    const PhysicalComponent& other_obj,
+    const double dt) {
+  double rt = dt;
+  double lt = 0;
+  while (rt - lt > PhysicalComponent::EPS) {
+    const double mt = (rt + lt) / 2;
+    if (sf::FloatRect(other_obj.hitbox_ +
+        (other_obj.velocity_ * static_cast<float>(mt))).intersects(this_obj->hitbox_)) {
+      rt = mt;
+    } else {
+      lt = mt;
+    }
+  }
+  return lt;
 }

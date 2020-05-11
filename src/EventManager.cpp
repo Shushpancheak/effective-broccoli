@@ -26,7 +26,7 @@ void EventManager::RunFor(const Duration duration) {
 }
 
 Status EventManager::Subscribe(SystemID sys_id, EventID event_id) {
-  subscribed_systems_map_.emplace(sys_id, event_id);
+  subscribed_systems_map_.emplace(event_id, sys_id);
   return make_result::Ok();
 }
 

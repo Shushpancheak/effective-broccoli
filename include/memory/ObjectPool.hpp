@@ -113,12 +113,17 @@ public:
       return cur_chunk_iter_ != other.cur_chunk_iter_;
     }
 
-    T operator*() {
+    T& operator*() {
       return *cur_chunk_iter_;
     }
 
     T* operator->() {
       return cur_chunk_iter_.operator->();
+    }
+
+    // TODO maybe explicit?...
+    operator T*() {
+      return cur_chunk_iter_;
     }
 
   private:
