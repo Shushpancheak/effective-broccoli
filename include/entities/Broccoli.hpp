@@ -13,7 +13,7 @@ public:
 
   int32_t padding;
 
-  BroccoliEntity(const EntityID entity_id)
+  BroccoliEntity(const EntityID entity_id, const sf::Vector2f initial_pos)
     : Entity(entity_id) {
     REPORT_IF_ERROR(
       bro::AddComponent<TransformComponent>(entity_id, nullptr)
@@ -31,9 +31,17 @@ public:
       )
     );
 
+    REPORT_IF_ERROR(
+      bro::RegisterEvent<SetTransformEvent>(
+        entity_id,
+        sf::Transform().translate(initial_pos)
+      )
+    );
+
     bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.setTexture(
       bro::GetResourceManager()->Get("img/effective-broccoli.png")
     );
+    bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->force_ = {, 1};
     bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->hitbox_ =
       bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.getGlobalBounds();
   }
