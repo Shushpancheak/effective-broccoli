@@ -6,6 +6,7 @@
 #include "engine/core.hpp"
 #include "components/TransformComponent.hpp"
 #include "components/PhysicalComponent.hpp"
+#include "support/random.hpp"
 
 class BroccoliEntity : public Entity {
 public:
@@ -41,7 +42,12 @@ public:
     bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.setTexture(
       bro::GetResourceManager()->Get("img/effective-broccoli.png")
     );
-    bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->force_ = {, 1};
+    bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.setScale(
+      rnd::GetVector2fRand() * 0.5f
+    );
+
+
+    bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->force_ = rnd::GetVector2fRand();
     bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->hitbox_ =
       bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.getGlobalBounds();
   }
