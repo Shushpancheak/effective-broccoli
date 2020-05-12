@@ -5,6 +5,8 @@
 #include <support/result.hpp>
 #include "systems/PhysicalSystem.hpp"
 
+#include "support/random.hpp"
+
 const SystemID PhysicalSystem::type_id;
 
 PhysicalSystem::PhysicalSystem()
@@ -31,12 +33,12 @@ Result<EntityID> PhysicalSystem::CorrectHitbox(PhysicalComponent &obj, double dt
     }
   }
 
+  if (min_ent == NO_ENTITY)
+    return make_result::Fail(NOT_FOUND);
+
   RevertHitbox(&obj, dt - min_time);
 
-  if (min_ent != NO_ENTITY)
-    return make_result::Ok(min_ent);
-
-  return make_result::Fail(NOT_FOUND);
+  return make_result::Ok(min_ent);
 }
 
 void PhysicalSystem::Accept(EventPtr event_ptr) {}
@@ -68,6 +70,7 @@ void PhysicalSystem::Update(Duration delta_time) {
 }
 
 void PhysicalSystem::UpdateHitbox(PhysicalComponent* obj, const double dt) {
+  obj->force_ += rnd::GetVector2fNormalRand() * 0.5f;
   obj->velocity_ += obj->force_ / obj->mass_;
   const auto offset = obj->velocity_ * static_cast<float>(dt);
   obj->hitbox_ = obj->hitbox_ + offset;
@@ -76,7 +79,10 @@ void PhysicalSystem::UpdateHitbox(PhysicalComponent* obj, const double dt) {
 }
 
 void PhysicalSystem::RevertHitbox(PhysicalComponent* obj, const double dt) {
+  const auto offset = obj->velocity_ * static_cast<float>(dt);
   obj->hitbox_ = obj->hitbox_ + obj->velocity_ * static_cast<float>(dt);
+
+  REPORT_IF_ERROR(bro::RegisterEvent<MoveEvent>(obj->entity_id, offset));
 }
 
 double PhysicalSystem::TrackCollision(

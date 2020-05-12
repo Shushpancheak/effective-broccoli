@@ -11,6 +11,8 @@
 #include "systems/TransformSystem.hpp"
 #include "systems/PhysicalSystem.hpp"
 
+#include "support/random.hpp"
+
 namespace bro {
 
   inline Status Init() {
@@ -30,10 +32,14 @@ namespace bro {
     GetSystemManager()->AddSystem<TransformSystem>().ThrowIfError();
     GetSystemManager()->AddSystem<PhysicalSystem>() .ThrowIfError();
 
+    rnd::Init(time(nullptr)).ThrowIfError();
+
     return make_result::Ok();
   }
 
   inline Status Terminate() {
+    rnd::Terminate().ExpectOk();
+
     detail::system_man.Destroy();
 
     detail::event_man.Destroy();

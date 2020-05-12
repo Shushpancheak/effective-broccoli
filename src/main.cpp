@@ -9,7 +9,11 @@
 int main() {
   bro::Init().ThrowIfError();
 
-  bro::GetEntityManager()->AddEntity<BroccoliEntity>().ThrowIfError();
+  for (size_t i = 0; i < 10; ++i) {
+    bro::GetEntityManager()->AddEntity<BroccoliEntity>(
+      sf::Vector2f(rnd::GetFloatRand() * 500, rnd::GetFloatRand() * 500)
+    ).ThrowIfError();
+  }
 
   const Duration time_for_frame(static_cast<long long>((1e9 / static_cast<float>(defaults::FPS))));
 
