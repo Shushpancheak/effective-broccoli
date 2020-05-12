@@ -10,6 +10,7 @@
 #include "systems/GraphicalSystem.hpp"
 #include "systems/TransformSystem.hpp"
 #include "systems/PhysicalSystem.hpp"
+#include <systems/ViewSystem.hpp>
 
 namespace bro {
 
@@ -29,6 +30,7 @@ namespace bro {
     GetSystemManager()->AddSystem<GraphicalSystem>().ThrowIfError();
     GetSystemManager()->AddSystem<TransformSystem>().ThrowIfError();
     GetSystemManager()->AddSystem<PhysicalSystem>() .ThrowIfError();
+    GetSystemManager()->AddSystem<ViewSystem>(bro::GetWindow()).ThrowIfError();
 
     return make_result::Ok();
   }

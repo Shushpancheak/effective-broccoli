@@ -34,7 +34,6 @@ public:
     bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.setTexture(
       bro::GetResourceManager()->Get("img/effective-broccoli.png")
     );
-    bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->force_ = {1, 1};
     bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->hitbox_ =
       bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.getGlobalBounds();
   }

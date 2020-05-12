@@ -26,12 +26,12 @@ set (
   src/EventManager.cpp
   src/SystemManager.cpp
 
-  
   src/DataChunk.cpp
   
   src/GraphicalSystem.cpp
   src/TransformSystem.cpp
   src/PhysicalSystem.cpp
+  src/ViewSystem.cpp
 )
 
 set (
@@ -48,14 +48,17 @@ set (
   include/systems/GraphicalSystem.hpp
   include/systems/TransformSystem.hpp
   include/systems/PhysicalSystem.hpp
+  include/systems/ViewSystem.hpp
   
   include/entities/Entity.hpp
   include/entities/Broccoli.hpp
   include/entities/GraphicalPlaceholderEntity.hpp
+  include/entities/Background.hpp
 
   include/events/Event.hpp
   include/events/graphic_events.hpp
   include/events/transform_events.hpp
+  include/events/view_events.hpp
   
   include/managers/SystemManager.hpp
   include/managers/ResourceManager.hpp 

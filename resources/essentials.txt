@@ -1,1 +1,3 @@
 img/effective-broccoli.png
+img/background.png
+img/background1.jpg
