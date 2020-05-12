@@ -3,6 +3,8 @@
 //
 #include "components/PhysicalComponent.hpp"
 
+const ComponentID PhysicalComponent::type_id;
+
 PhysicalComponent::PhysicalComponent(const EntityID owner, sf::Rect<float> hitbox_, float mass_, PhysicalGroup group)
   : Component(owner)
   , hitbox_(hitbox_)

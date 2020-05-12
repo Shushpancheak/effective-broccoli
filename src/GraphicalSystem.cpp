@@ -1,5 +1,7 @@
 #include "systems/GraphicalSystem.hpp"
 
+const SystemID GraphicalSystem::type_id;
+
 #define NEW_GRAPHICAL_ENTITY bro::GetEntityManager()->AddEntity<GraphicalPlaceholderEntity>()
 
 GraphicalSystem::GraphicalSystem()

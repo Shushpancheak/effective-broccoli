@@ -5,6 +5,7 @@
 #include <support/result.hpp>
 #include "systems/PhysicalSystem.hpp"
 
+const SystemID PhysicalSystem::type_id;
 
 PhysicalSystem::PhysicalSystem()
   : static_objects_(defaults::WORLD_BOUNDARY)

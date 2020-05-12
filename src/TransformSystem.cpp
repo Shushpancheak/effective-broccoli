@@ -1,5 +1,7 @@
 #include "systems/TransformSystem.hpp"
 
+const SystemID TransformSystem::type_id;
+
 TransformSystem::TransformSystem() {
   bro::GetEventManager()->Subscribe(
     TransformSystem::type_id, MoveEvent::type_id

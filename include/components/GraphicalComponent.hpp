@@ -22,5 +22,4 @@ struct GraphicalComponent : public Component {
   std::vector<GraphicalComponent*> children;
 };
 
-
 #endif //EFFECTIVE_BROCOLLI_GRAPHIC_COMPONENT_HPP

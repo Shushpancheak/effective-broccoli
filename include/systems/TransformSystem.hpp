@@ -14,7 +14,7 @@ public:
   const static SystemID type_id = SYSTEM_TRANSFORM;
 
   explicit TransformSystem();
-
+  ~TransformSystem() {};
   virtual void Accept(EventPtr event_ptr) override;
 
 private:
