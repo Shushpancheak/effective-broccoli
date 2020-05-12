@@ -13,7 +13,15 @@ int main() {
   bro::Init().ThrowIfError();
 
   bro::GetEntityManager()->AddEntity<BackgroundEntity>().ThrowIfError();
-  int player_id = bro::GetEntityManager()->AddEntity<BroccoliEntity>().Value();
+
+  int player_id = 0;
+  for (size_t i = 0; i < 10; ++i) {
+    player_id = bro::GetEntityManager()->AddEntity<BroccoliEntity>(
+      sf::Vector2f(rnd::GetFloatRand() * 500, rnd::GetFloatRand() * 500)
+    ).Value();
+  }
+
+
   const Duration time_for_frame(static_cast<long long>((1e9 / static_cast<float>(defaults::FPS))));
 
   while (bro::GetWindow()->isOpen()) {
