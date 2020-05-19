@@ -62,6 +62,7 @@ void PhysicalSystem::Update(Duration delta_time) {
       std::cout << "wall hit" << std::endl;
       // bro::GetEventManager()->sendMessage<CollisionMessage>(moving_object, colided);
     }
+    /*EventManager.sendMessage<MoveMessage>(moving_object, component.hitbox_); */
   }
 
   for (const auto &pair : dynamic_objects_.findAllIntersections()) {
