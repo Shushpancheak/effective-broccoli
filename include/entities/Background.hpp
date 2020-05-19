@@ -25,7 +25,6 @@ public:
     bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.setTexture(
         bro::GetResourceManager()->Get("img/background1.jpg")
     );
-        bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.getGlobalBounds();
   }
 
 private:

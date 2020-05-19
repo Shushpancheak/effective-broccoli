@@ -70,7 +70,7 @@ void PhysicalSystem::Update(Duration delta_time) {
 }
 
 void PhysicalSystem::UpdateHitbox(PhysicalComponent* obj, const double dt) {
-  obj->force_ += rnd::GetVector2fNormalRand() * 0.5f;
+//  obj->force_ += rnd::GetVector2fNormalRand() * 0.5f;
   obj->velocity_ += obj->force_ / obj->mass_;
   const auto offset = obj->velocity_ * static_cast<float>(dt);
   obj->hitbox_ = obj->hitbox_ + offset;

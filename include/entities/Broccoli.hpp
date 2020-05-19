@@ -42,12 +42,12 @@ public:
     bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.setTexture(
       bro::GetResourceManager()->Get("img/effective-broccoli.png")
     );
-    bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.setScale(
-      rnd::GetVector2fRand() * 0.5f
-    );
+//    bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.setScale(
+//      rnd::GetVector2fRand() * 0.5f
+//    );
 
 
-    bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->force_ = rnd::GetVector2fRand();
+    bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->force_ = {0, 0};
     bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->hitbox_ =
       bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.getGlobalBounds();
   }

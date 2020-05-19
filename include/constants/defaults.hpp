@@ -21,10 +21,12 @@ const sf::Rect<float> WORLD_BOUNDARY = {0, 0, 200, 200};
 const std::string_view RESOURCES_FOLDER = "../../../resources/";
 #else
 const std::string_view RESOURCES_FOLDER = "../resources/";
+const std::string_view CONFIG_PATH = "../resources/config.yaml";
 #endif
 
 #else
 const std::string_view RESOURCES_FOLDER = "resources/";
+const std::string_view CONFIG_PATH = "resources/config.yaml";
 #endif
 
 }

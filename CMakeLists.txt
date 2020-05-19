@@ -27,6 +27,7 @@ set (
   src/SystemManager.cpp
 
   src/DataChunk.cpp
+  src/MapLoader.cpp
   
   src/GraphicalSystem.cpp
   src/TransformSystem.cpp
@@ -52,6 +53,7 @@ set (
   
   include/entities/Entity.hpp
   include/entities/Broccoli.hpp
+  include/entities/Garnet.hpp
   include/entities/GraphicalPlaceholderEntity.hpp
   include/entities/Background.hpp
 
@@ -78,6 +80,7 @@ set (
   include/support/IntrusiveList.hpp
   include/support/IntrusiveNode.hpp
   include/support/QuadTree.hpp
+  include/support/MapLoader.hpp
 )
 
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES} src/main.cpp)
@@ -150,3 +153,10 @@ ${PROJECT_NAME} sfml-graphics sfml-audio sfml-system
 endif() # SFML
 
 find_package(SFML 2.5 COMPONENTS graphics audio system REQUIRED)
+
+# - - - - - - - - - - - - - - - - -YAML-CPP - - - - - - - - - - - - - - - - - - - -
+target_link_libraries(
+  ${PROJECT_NAME} yaml-cpp
+)
+
+find_package(yaml-cpp)

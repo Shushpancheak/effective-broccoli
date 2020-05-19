@@ -3,7 +3,7 @@
 
 const SystemID ViewSystem::type_id;
 
-ViewSystem::ViewSystem(sf::RenderWindow* window) : view(sf::FloatRect(-5000, -5000, 10000, 10000)) {
+ViewSystem::ViewSystem(sf::RenderWindow* window) : view(sf::FloatRect(-1000, -1000, 5000, 5000)) {
   bro::GetEventManager()->Subscribe(
       ViewSystem::type_id, MoveViewEvent::type_id
   ).ThrowIfError();
