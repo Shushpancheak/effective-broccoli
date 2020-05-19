@@ -9,7 +9,7 @@
 
 class BackgroundEntity : public Entity {
 public:
-  static const EntityID type_id = ENTITY_BROCCOLI;
+  static const EntityID type_id = ENTITY_BACKGROUND;
 
   int32_t padding;
 

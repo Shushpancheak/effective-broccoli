@@ -7,6 +7,7 @@
 
 #include "yaml-cpp/yaml.h"
 #include "engine/core.hpp"
+#include "yaml-cpp/node/node.h"
 
 struct CommonGraphicalData {
   std::string sprite_path;
