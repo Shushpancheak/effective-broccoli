@@ -129,13 +129,6 @@ add_subdirectory(submodules)
 # Chose a way to find the SFML.
 if (MSVC) # WINDOWS
 
-target_link_libraries(
-  ${PROJECT_NAME}
-  sfml-graphics
-  sfml-audio
-  sfml-system
-)
-
 ## If you want to link SFML statically
 set(SFML_STATIC_LIBRARIES TRUE)
 
@@ -143,20 +136,18 @@ set(SFML_STATIC_LIBRARIES TRUE)
 set(SFML_DIR "submodules/sfml-compiled/lib/cmake/SFML")
 
 include_directories(submodules/sfml-compiled/include)
+include_directories(submodules/yaml-cpp/include)
 
 else() # LINUX
 
+endif()
+
 target_link_libraries(
-${PROJECT_NAME} sfml-graphics sfml-audio sfml-system
+  ${PROJECT_NAME} sfml-graphics sfml-audio sfml-system
 )
-
-endif() # SFML
-
-find_package(SFML 2.5 COMPONENTS graphics audio system REQUIRED)
-
-# - - - - - - - - - - - - - - - - -YAML-CPP - - - - - - - - - - - - - - - - - - - -
 target_link_libraries(
   ${PROJECT_NAME} yaml-cpp
 )
 
+find_package(SFML 2.5 COMPONENTS graphics audio system REQUIRED)
 find_package(yaml-cpp)

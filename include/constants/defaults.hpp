@@ -19,6 +19,7 @@ const sf::Rect<float> WORLD_BOUNDARY = {0, 0, 200, 200};
 
 #ifdef WIN32
 const std::string_view RESOURCES_FOLDER = "../../../resources/";
+const std::string_view CONFIG_PATH = "../../../resources/config.yaml";
 #else
 const std::string_view RESOURCES_FOLDER = "../resources/";
 const std::string_view CONFIG_PATH = "../resources/config.yaml";
