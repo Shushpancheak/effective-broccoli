@@ -1,0 +1,3 @@
+void InputSystem::readAllInput() {
+
+}
