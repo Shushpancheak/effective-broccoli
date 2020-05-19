@@ -18,11 +18,7 @@ void EventManager::RunFor(const Duration duration) {
     auto iter = iter_pair.first;
     auto end = iter_pair.second;
     for (; iter != end; ++iter) {
-      auto system = system_man_ptr->GetSystem(iter->second);
-
-      system.ThrowIfError();
-
-      system.ValueUnsafe()->Accept(event_ptr);
+      system_man_ptr->GetSystem(iter->second)->Accept(event_ptr);
     }
 
     auto res = events_pool_.Free(static_cast<void*>(event_ptr));
@@ -30,7 +26,7 @@ void EventManager::RunFor(const Duration duration) {
 }
 
 Status EventManager::Subscribe(SystemID sys_id, EventID event_id) {
-  subscribed_systems_map_.emplace(sys_id, event_id);
+  subscribed_systems_map_.emplace(event_id, sys_id);
   return make_result::Ok();
 }
 

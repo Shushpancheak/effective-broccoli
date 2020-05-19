@@ -21,7 +21,7 @@ class DataChunk : public IntrusiveNode<DataChunk> {
 
 public:
   explicit DataChunk(size_t object_size, TypeID type_id,
-                        size_t object_count = 100);
+                     size_t object_count = 100);
   ~DataChunk();
 
   DataChunk(const DataChunk& other) = delete;
@@ -161,6 +161,7 @@ private:
 // Fields
 private:
   static const size_t EMPTY_MEMORY_BYTES = 0xDEADBEEF;
+  static const size_t NON_EMPTY_MEMORY_BYTES = 0xBEEFDEAD; // must not be equal to empty bytes
 
   char* buffer_start_;
   char* buffer_end_; // Points to memory just outside the buffer.
@@ -170,6 +171,84 @@ private:
 
   // Not really needed, but it can greatly optimize IsEmpty().
   size_t size_;
+
+// Iterators
+public:
+  template<typename T>
+  class Iterator {
+  public:
+    using difference_type = ptrdiff_t;
+    using value_type = T;
+    using pointer = const T*;
+    using reference = const T&;
+    using iterator_category = std::forward_iterator_tag;
+
+    explicit Iterator(void* ptr)
+      : ptr_(static_cast<T*>(ptr)) {
+      if (ptr == nullptr) {
+        return;
+      }
+      while (DataChunk::IsAvailable(ptr_)) {
+        ++ptr_;
+      }
+    }
+
+    Iterator& operator++() {
+      do {
+        ++ptr_;
+      } while (DataChunk::IsAvailable(ptr_));
+      return *this;
+    }
+
+    Iterator operator++(int) {
+      Iterator res = *this;
+      ++(*this);
+      return res;
+    }
+
+    bool operator==(const Iterator& other) const {
+      return ptr_ == other.ptr_;
+    }
+
+    bool operator!=(const Iterator& other) const {
+      return ptr_ != other.ptr_;
+    }
+
+    T& operator*() {
+      return *ptr_;
+    }
+
+    T* operator->() {
+      return ptr_;
+    }
+
+    operator T*() {
+      return ptr_;
+    }
+
+    Iterator& operator=(const Iterator& other) {  // NOLINT(bugprone-unhandled-self-assignment)
+      if (&other == this) {
+         return *this;
+      }
+
+      ptr_ = other.ptr_;
+      return *this;
+    }
+
+  private:
+    T* ptr_;
+  };
+
+  template<typename T>
+  Iterator<T> begin() {
+    return Iterator<T>(buffer_start_);
+  }
+
+  
+  template<typename T>
+  Iterator<T> end() {
+    return Iterator<T>(buffer_end_);
+  }
 };
 
 template<typename T, typename ... Args>
@@ -261,7 +340,7 @@ Status DataChunk::DeleteIfPresent(T* item_ptr, size_t count) {
   return make_result::Ok();
 }
 
-template<typename T, typename ... Args>
+template<typename T, typename ...Args>
 Status DataChunk::Construct(void* item_addr, Args&&... args) {
   OP_ASSERT_IN_BUFFER_RANGE(item_addr);
   OP_ASSERT_ADDRESS_ALIGNED(item_addr);

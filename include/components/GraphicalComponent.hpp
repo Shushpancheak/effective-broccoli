@@ -15,10 +15,11 @@ struct GraphicalComponent : public Component {
   sf::Sprite sprite;
   sf::Transform abs_transform; // absolute transform that
                                // equals parents_transform * rel_transform
-  sf::Transform rel_transform; // local transform that applies to the parent's transform
+                               // Is updated every Update call to the graphical system.
+ 
+  sf::Transform rel_transform; // local transform that is applied to the parent's transform
 
   std::vector<GraphicalComponent*> children;
 };
-
 
 #endif //EFFECTIVE_BROCOLLI_GRAPHIC_COMPONENT_HPP

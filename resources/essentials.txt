@@ -1,1 +1,7 @@
 img/effective-broccoli.png
+img/angry-boi.png
+img/background.png
+img/background1.jpg
+img/grass.png
+img/dirt.png
+img/terrains.png

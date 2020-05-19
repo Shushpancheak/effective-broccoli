@@ -22,8 +22,6 @@ public:
   virtual void Accept(EventPtr event_ptr) = 0;
           void UpdateBase();
 
-  void operator delete(void*) = delete;
-  void operator delete[](void*) = delete;
 
 protected:
   virtual void Update(Duration delta_time) = 0;

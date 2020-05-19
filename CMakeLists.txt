@@ -12,29 +12,27 @@ project (
   DESCRIPTION ""
 )
 
-include_directories("include")
+include_directories(include)
 
 set (
   SOURCES
-  src/main.cpp
-
-  #src/QuadTree.cpp
-
   src/GraphicalComponent.cpp
   src/TransformComponent.cpp
-  #src/PhysicalComponent.cpp
+  src/PhysicalComponent.cpp
   
   src/ResourceManager.cpp
   src/ComponentManager.cpp
   src/EntityManager.cpp
   src/EventManager.cpp
-  src/SystemManager.cpp  
+  src/SystemManager.cpp
 
-  src/ObjectPool.cpp
   src/DataChunk.cpp
+  src/MapLoader.cpp
   
   src/GraphicalSystem.cpp
   src/TransformSystem.cpp
+  src/PhysicalSystem.cpp
+  src/ViewSystem.cpp
 )
 
 set (
@@ -44,20 +42,25 @@ set (
 
   include/components/Component.hpp
   include/components/GraphicalComponent.hpp
-  #include/components/PhysicalComponent.hpp
+  include/components/PhysicalComponent.hpp
   include/components/TransformComponent.hpp
+
   include/systems/System.hpp
+  include/systems/GraphicalSystem.hpp
+  include/systems/TransformSystem.hpp
   include/systems/PhysicalSystem.hpp
-  
-  #include/QuadTree.hpp
+  include/systems/ViewSystem.hpp
   
   include/entities/Entity.hpp
   include/entities/Broccoli.hpp
+  include/entities/Garnet.hpp
   include/entities/GraphicalPlaceholderEntity.hpp
+  include/entities/Background.hpp
 
   include/events/Event.hpp
   include/events/graphic_events.hpp
   include/events/transform_events.hpp
+  include/events/view_events.hpp
   
   include/managers/SystemManager.hpp
   include/managers/ResourceManager.hpp 
@@ -76,6 +79,8 @@ set (
   include/support/result.cpp
   include/support/IntrusiveList.hpp
   include/support/IntrusiveNode.hpp
+  include/support/QuadTree.hpp
+  include/support/MapLoader.hpp
 )
 
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES} src/main.cpp)
@@ -124,13 +129,6 @@ add_subdirectory(submodules)
 # Chose a way to find the SFML.
 if (MSVC) # WINDOWS
 
-target_link_libraries(
-  ${PROJECT_NAME}
-  sfml-graphics
-  sfml-audio
-  sfml-system
-)
-
 ## If you want to link SFML statically
 set(SFML_STATIC_LIBRARIES TRUE)
 
@@ -138,13 +136,18 @@ set(SFML_STATIC_LIBRARIES TRUE)
 set(SFML_DIR "submodules/sfml-compiled/lib/cmake/SFML")
 
 include_directories(submodules/sfml-compiled/include)
+include_directories(submodules/yaml-cpp/include)
 
 else() # LINUX
 
+endif()
+
 target_link_libraries(
-${PROJECT_NAME} sfml-graphics sfml-audio sfml-system
+  ${PROJECT_NAME} sfml-graphics sfml-audio sfml-system
+)
+target_link_libraries(
+  ${PROJECT_NAME} yaml-cpp
 )
 
-endif() # SFML
-
 find_package(SFML 2.5 COMPONENTS graphics audio system REQUIRED)
+find_package(yaml-cpp)

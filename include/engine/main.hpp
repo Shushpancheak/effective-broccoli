@@ -9,6 +9,10 @@
 
 #include "systems/GraphicalSystem.hpp"
 #include "systems/TransformSystem.hpp"
+#include "systems/PhysicalSystem.hpp"
+#include <systems/ViewSystem.hpp>
+
+#include "support/random.hpp"
 
 namespace bro {
 
@@ -27,12 +31,17 @@ namespace bro {
 
     GetSystemManager()->AddSystem<GraphicalSystem>().ThrowIfError();
     GetSystemManager()->AddSystem<TransformSystem>().ThrowIfError();
-    //GetSystemManager()->AddSystem<PhysicalSystem>().ThrowIfError();
+    GetSystemManager()->AddSystem<PhysicalSystem>() .ThrowIfError();
+    GetSystemManager()->AddSystem<ViewSystem>(bro::GetWindow()).ThrowIfError();
+
+    rnd::Init(time(nullptr)).ThrowIfError();
 
     return make_result::Ok();
   }
 
   inline Status Terminate() {
+    rnd::Terminate().ExpectOk();
+
     detail::system_man.Destroy();
 
     detail::event_man.Destroy();

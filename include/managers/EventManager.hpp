@@ -41,15 +41,15 @@ public:
   Status Unsubscribe(SystemID sys_id, EventID event_id);
 
 private:
-  ObjectPool events_pool_;
+  ObjectPool<EVENT_MAX> events_pool_;
   std::queue<EventPtr> events_queue_{};
   std::unordered_multimap<EventID, SystemID> subscribed_systems_map_{};
   SystemManager* system_man_ptr;
 };
 
-template<typename T, typename ... Args>
+template<typename T, typename ...Args>
 Status EventManager::RegisterEvent(Args&&... args) {
-  auto create_res = events_pool_.CreateObject<T>(T::type_id, args...);
+  auto create_res = events_pool_.CreateObject<T>(std::forward<Args>(args)...);
 
   CHECK_ERROR(create_res);
 
