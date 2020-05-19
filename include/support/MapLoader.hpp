@@ -7,10 +7,11 @@
 
 #include "yaml-cpp/yaml.h"
 #include "engine/core.hpp"
+#include "yaml-cpp/node/node.h"
 
 struct CommonGraphicalData {
   std::string sprite_path;
-  sf::Vector2f size;
+  sf::Rect<int> sprite_rect;
 };
 
 class MapLoader {

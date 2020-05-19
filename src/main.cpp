@@ -24,7 +24,7 @@ int main() {
   ).Value();
 
 
-  const Duration time_for_frame(static_cast<long long>((1e10 / static_cast<float>(defaults::FPS))));
+  const Duration time_for_frame(static_cast<long long>((1e9 / static_cast<float>(defaults::FPS))));
 
   while (bro::GetWindow()->isOpen()) {
     sf::Event event{};
@@ -37,7 +37,7 @@ int main() {
     double k = (player_hitbox.top - mob_hitbox.top) / (player_hitbox.left - mob_hitbox.left);
     std::cout << "PLAYER: " << player_hitbox.top << ' ' << player_hitbox.left << std::endl;
     std::cout << "MOB: " << mob_hitbox.top << ' ' << mob_hitbox.left << std::endl;
-    std::cout << "LEN: " << len << " K: " << k << std::endl;
+    //std::cout << "LEN: " << len << " K: " << k << std::endl;
     double new_vel_x = std::sqrt((len * len) / (k * k + 1));
     double new_vel_y = new_vel_x * k;
     int x_sign = player_hitbox.left - mob_hitbox.left > 0? 1 : -1;

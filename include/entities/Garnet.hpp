@@ -18,7 +18,7 @@
 
 class GarnetEntity : public Entity {
 public:
-  static const EntityID type_id = ENTITY_BROCCOLI;
+  static const EntityID type_id = ENTITY_GARNET;
 
   int32_t padding;
 
