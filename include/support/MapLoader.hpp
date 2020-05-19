@@ -11,7 +11,7 @@
 
 struct CommonGraphicalData {
   std::string sprite_path;
-  sf::Vector2f size;
+  sf::Rect<int> sprite_rect;
 };
 
 class MapLoader {

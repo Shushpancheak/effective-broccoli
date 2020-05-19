@@ -31,13 +31,13 @@ int main() {
     auto player_hitbox = bro::GetComponentManager()->GetComponent<PhysicalComponent>(player_id).Value()->hitbox_;
     auto mob_hitbox = bro::GetComponentManager()->GetComponent<PhysicalComponent>(mob_id).Value()->hitbox_;
     auto mob_vel = bro::GetComponentManager()->GetComponent<PhysicalComponent>(mob_id).Value()->velocity_;
-    double len = std::sqrt(mob_vel.x * mob_vel.x + mob_vel.y + mob_vel.y);
-//    std::cout << player_hitbox.top - mob_hitbox.top << ' ' << player_hitbox.left - mob_hitbox.left << std::endl;
+    double len = std::sqrt(mob_vel.x * mob_vel.x + mob_vel.y * mob_vel.y);
+    //std::cout << player_hitbox.top - mob_hitbox.top << ' ' << player_hitbox.left - mob_hitbox.left << std::endl;
     double k = (player_hitbox.top - mob_hitbox.top) / (player_hitbox.left - mob_hitbox.left);
     if (player_hitbox.left == mob_hitbox.left) {
       k = 0;
     }
-    std::cout << player_hitbox.top << ' ' << player_hitbox.left << std::endl;
+    //std::cout << player_hitbox.top << ' ' << player_hitbox.left << std::endl;
     double new_vel_x = std::sqrt((len * len) / (k * k + 1));
     double new_vel_y = new_vel_x * k;
     bro::GetComponentManager()->GetComponent<PhysicalComponent>(mob_id).Value()->velocity_ = {static_cast<float>(new_vel_x), static_cast<float>(new_vel_y)};

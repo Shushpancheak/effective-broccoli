@@ -13,12 +13,17 @@ MapLoader::MapLoader(const std::string &filename) : INITIAL_X(-1000), INITIAL_Y(
     if (block["graph_comp"]) {
       types_.push_back({
         block["graph_comp"]["sprite_path"].as<std::string>(),
-        {block["graph_comp"]["sprite_pos"]["width"].as<float>(), block["graph_comp"]["sprite_pos"]["height"].as<float>()}
+        {
+          block["graph_comp"]["sprite_pos"]["left"].as<int>(),
+          block["graph_comp"]["sprite_pos"]["top"].as<int>(),
+          block["graph_comp"]["sprite_pos"]["width"].as<int>(),
+          block["graph_comp"]["sprite_pos"]["height"].as<int>()
+        }
       });
     }
   }
-  for (const auto& i : blocks_.back()["Map"]["tiles"]) {
-    for (auto j : i.as<std::vector<int>>()) {
+  for (const auto& row : blocks_.back()["Map"]["tiles"]) {
+    for (auto map_entity_id : row.as<std::vector<int>>()) {
       int current_id = bro::GetEntityManager()->AddEntity<Entity>();
       bro::AddComponent<GraphicalComponent>(
         current_id,
@@ -31,16 +36,19 @@ MapLoader::MapLoader(const std::string &filename) : INITIAL_X(-1000), INITIAL_Y(
       bro::GetComponentUnsafe<GraphicalComponent>(
         current_id
         )->sprite.setTexture(
-          bro::GetResourceManager()->Get(types_[j].sprite_path)
+          bro::GetResourceManager()->Get(types_[map_entity_id].sprite_path)
         );
       bro::GetComponentUnsafe<GraphicalComponent>(current_id)->sprite.setScale(
           {SCALE_FACTOR, SCALE_FACTOR}
+      );
+      bro::GetComponentUnsafe<GraphicalComponent>(current_id)->sprite.setTextureRect(
+          types_[map_entity_id].sprite_rect
       );
       bro::RegisterEvent<SetTransformEvent>(
         current_id,
         sf::Transform().translate(current_pos)
       ).ThrowIfError();
-      current_pos.x += types_[j].size.x * SCALE_FACTOR;
+      current_pos.x += types_[map_entity_id].sprite_rect.width * SCALE_FACTOR;
     }
     current_pos.y += 32 * SCALE_FACTOR;
     current_pos.x = INITIAL_X;
