@@ -35,9 +35,6 @@ int main() {
     const double len = 130.0;
     std::cout << player_hitbox.top - mob_hitbox.top << ' ' << player_hitbox.left - mob_hitbox.left << std::endl;
     double k = std::abs((player_hitbox.top - mob_hitbox.top) / (player_hitbox.left - mob_hitbox.left));
-    std::cout << "PLAYER: " << player_hitbox.top << ' ' << player_hitbox.left << std::endl;
-    std::cout << "MOB: " << mob_hitbox.top << ' ' << mob_hitbox.left << std::endl;
-    //std::cout << "LEN: " << len << " K: " << k << std::endl;
     double new_vel_x = std::sqrt((len * len) / (k * k + 1));
     double new_vel_y = new_vel_x * k;
     int x_sign = player_hitbox.left - mob_hitbox.left > 0? 1 : -1;
@@ -49,7 +46,6 @@ int main() {
       new_vel_x = 0;
     }
     new_vel_x *= x_sign;
-//    std::cout << "SPEED: " << new_vel_x << ' ' << new_vel_y << std::endl;
     bro::GetComponentManager()->GetComponent<PhysicalComponent>(mob_id).Value()->velocity_ = {static_cast<float>(new_vel_x), static_cast<float>(new_vel_y)};
     while (bro::GetWindow()->pollEvent(event)) {
       if (event.type == sf::Event::Closed) {

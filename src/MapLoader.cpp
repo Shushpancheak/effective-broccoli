@@ -11,13 +11,15 @@ MapLoader::MapLoader(const std::string &filename) : INITIAL_X(-1000), INITIAL_Y(
   blocks_ = YAML::LoadAllFromFile(filename);
   for (auto& block : blocks_) {
     if (block["graph_comp"]) {
+      const auto& sprite_pos = block["graph_comp"]["sprite_pos"];
+
       types_.push_back({
         block["graph_comp"]["sprite_path"].as<std::string>(),
         {
-          block["graph_comp"]["sprite_pos"]["left"].as<int>(),
-          block["graph_comp"]["sprite_pos"]["top"].as<int>(),
-          block["graph_comp"]["sprite_pos"]["width"].as<int>(),
-          block["graph_comp"]["sprite_pos"]["height"].as<int>()
+          sprite_pos["left"].as<int>(),
+          sprite_pos["top"].as<int>(),
+          sprite_pos["width"].as<int>(),
+          sprite_pos["height"].as<int>()
         }
       });
     }
@@ -48,6 +50,7 @@ MapLoader::MapLoader(const std::string &filename) : INITIAL_X(-1000), INITIAL_Y(
         current_id,
         sf::Transform().translate(current_pos)
       ).ThrowIfError();
+
       current_pos.x += types_[map_entity_id].sprite_rect.width * SCALE_FACTOR;
     }
     current_pos.y += 32 * SCALE_FACTOR;
