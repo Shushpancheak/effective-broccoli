@@ -49,8 +49,12 @@ public:
 
     bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->force_ = {0, 0};
     bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->velocity_ = {100, -100};
+
+    auto bounds = bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.getGlobalBounds();
+    bounds.left -= bounds.width  / 2;
+    bounds.top  -= bounds.height / 2;
     bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->hitbox_ =
-      bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.getGlobalBounds();
+      bounds;
   }
 
 private:
