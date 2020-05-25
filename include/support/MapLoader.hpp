@@ -9,9 +9,10 @@
 #include "engine/core.hpp"
 #include "yaml-cpp/node/node.h"
 
-struct CommonGraphicalData {
+struct CommonEntityData {
   std::string sprite_path;
   sf::Rect<int> sprite_rect;
+  bool is_static;
 };
 
 class MapLoader {
@@ -20,7 +21,7 @@ public:
 
 private:
   std::vector<YAML::Node> blocks_;
-  std::vector<CommonGraphicalData> types_;
+  std::vector<CommonEntityData> types_;
   float INITIAL_X;
   float INITIAL_Y;
 };
