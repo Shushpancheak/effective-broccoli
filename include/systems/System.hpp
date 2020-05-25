@@ -9,6 +9,7 @@ enum {
   SYSTEM_GRAPHICAL,
   SYSTEM_PHYSICAL,
   SYSTEM_TRANSFORM,
+  SYSTEM_VIEW,
   SYSTEM_MAX
 };
 
@@ -18,6 +19,9 @@ class System {
 public:
   static const TypeID type_id = SYSTEM_NULL; // -- add in children
 
+  System()	
+    : last_update_time_(Clock::now())	
+    , time_now_(Clock::now()) {}
   virtual ~System() = default;
   virtual void Accept(EventPtr event_ptr) = 0;
           void UpdateBase();

@@ -109,12 +109,12 @@ set(UNIT_TESTS_FILE
 add_executable(${UNIT_TESTS_NAME} ${UNIT_TESTS_FILE} ${HEADERS} ${SOURCES})
 
 # Link test executable against gtest & gtest_main & sfml
-target_link_libraries(${UNIT_TESTS_NAME} gtest_main sfml-graphics sfml-audio sfml-system)
+target_link_libraries(${UNIT_TESTS_NAME} gtest_main sfml-graphics sfml-audio sfml-system yaml-cpp)
 
 add_test(${UNIT_TESTS_NAME} ${UNIT_TESTS_NAME})
 
 # For next_ libraries.
-set(BUILD_TESTS OFF CACHE BOOL "Build tests" FORCE)
+#set(BUILD_TESTS OFF CACHE BOOL "Build tests" FORCE)
 
 endif() # BUILD_TESTS
 
@@ -151,3 +151,4 @@ target_link_libraries(
 
 find_package(SFML 2.5 COMPONENTS graphics audio system REQUIRED)
 find_package(yaml-cpp)
+
