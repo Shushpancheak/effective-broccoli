@@ -10,7 +10,8 @@
 #include "systems/GraphicalSystem.hpp"
 #include "systems/TransformSystem.hpp"
 #include "systems/PhysicalSystem.hpp"
-#include <systems/ViewSystem.hpp>
+#include "systems/ViewSystem.hpp"
+#include "systems/AiSystem.hpp"
 
 #include "support/random.hpp"
 
@@ -33,6 +34,7 @@ namespace bro {
     GetSystemManager()->AddSystem<TransformSystem>().ThrowIfError();
     GetSystemManager()->AddSystem<PhysicalSystem>() .ThrowIfError();
     GetSystemManager()->AddSystem<ViewSystem>(bro::GetWindow()).ThrowIfError();
+    GetSystemManager()->AddSystem<AiSystem>() .ThrowIfError();
 
     rnd::Init(time(nullptr)).ThrowIfError();
 

@@ -13,6 +13,7 @@
 #include "engine/core.hpp"
 
 #include "events/transform_events.hpp"
+#include "events/physical_events.hpp"
 
 // Group - bitmask? or register groups
 class PhysicalSystem : public System {

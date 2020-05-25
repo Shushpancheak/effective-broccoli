@@ -33,6 +33,7 @@ set (
   src/TransformSystem.cpp
   src/PhysicalSystem.cpp
   src/ViewSystem.cpp
+  src/AiSystem.cpp
 )
 
 set (

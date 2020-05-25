@@ -66,6 +66,8 @@ void PhysicalSystem::Update(Duration delta_time) {
   }
 
   for (const auto &pair : dynamic_objects_.findAllIntersections()) {
+    REPORT_IF_ERROR(bro::RegisterEvent<CollisionEvent>(pair.first, pair.second));
+
     std::cout << "collided" << std::endl;
   }
 }

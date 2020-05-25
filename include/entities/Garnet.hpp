@@ -12,6 +12,7 @@
 #include "components/TransformComponent.hpp"
 #include "components/PhysicalComponent.hpp"
 #include "components/GraphicalComponent.hpp"
+#include "components/AiComponent.hpp"
 #include "systems/GraphicalSystem.hpp"
 #include "events/transform_events.hpp"
 #include "support/random.hpp"
@@ -37,6 +38,12 @@ public:
         bro::AddComponent<GraphicalComponent>(
             entity_id,
             bro::GetSystem<GraphicalSystem>()->GetMiddle()
+        )
+    );
+    REPORT_IF_ERROR(
+        bro::AddComponent<AiComponent>(
+            entity_id,
+            AiType::AGGRESSIVE
         )
     );
 

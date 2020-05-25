@@ -25,7 +25,7 @@ graph_comp:
   layer: BACKGROUND
 phys_comp:
   on_grid: true
-  is_static: true
+  is_static: false
   is_player_controlled: false
 ---
 entity_id: 2
@@ -40,7 +40,7 @@ graph_comp:
   layer: BACKGROUND
 phys_comp:
   on_grid: true
-  is_static: true
+  is_static: false
   is_player_controlled: false
 ---
 entity_id: 3
