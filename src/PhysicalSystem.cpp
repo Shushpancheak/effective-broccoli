@@ -66,7 +66,7 @@ void PhysicalSystem::Update(Duration delta_time) {
   }
 
   for (const auto &pair : dynamic_objects_.findAllIntersections()) {
-    // EventManager.sendMessage<CollisionMessage>(pair);
+    std::cout << "collided" << std::endl;
   }
 }
 

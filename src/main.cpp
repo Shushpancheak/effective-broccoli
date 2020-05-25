@@ -17,10 +17,10 @@ int main() {
 
   MapLoader(std::string(defaults::CONFIG_PATH));
   int player_id = bro::GetEntityManager()->AddEntity<BroccoliEntity>(
-    sf::Vector2f(rnd::GetFloatRand() * 500, rnd::GetFloatRand() * 500)
+    sf::Vector2f(0, 0)
   ).Value();
   int mob_id = bro::GetEntityManager()->AddEntity<GarnetEntity>(
-      sf::Vector2f(rnd::GetFloatRand() * 500, rnd::GetFloatRand() * 500)
+      sf::Vector2f(1000, 1000)
   ).Value();
 
 
@@ -86,6 +86,14 @@ int main() {
     bro::GetSystem<PhysicalSystem>()->UpdateBase();
 
     bro::GetEventManager()->RunFor(time_for_frame / 10);
+
+    //sf::RectangleShape shape_player({player_hitbox.width, player_hitbox.height});
+    //sf::RectangleShape shape_mob   ({mob_hitbox   .width, mob_hitbox   .height});
+    //shape_player.move              ({player_hitbox.left, player_hitbox.top});
+    //shape_mob   .move              ({mob_hitbox   .left, mob_hitbox   .top});
+    //
+    //bro::GetWindow()->draw(shape_player);
+    //bro::GetWindow()->draw(shape_mob   );
 
     std::this_thread::sleep_for(9 * time_for_frame / 10);
 

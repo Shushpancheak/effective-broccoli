@@ -40,20 +40,23 @@ public:
         )
     );
 
-    REPORT_IF_ERROR(
-        bro::RegisterEvent<SetTransformEvent>(
-            entity_id,
-            sf::Transform().translate(initial_pos)
-        )
-    );
+    //REPORT_IF_ERROR(
+    //    bro::RegisterEvent<SetTransformEvent>(
+    //        entity_id,
+    //        sf::Transform().translate(initial_pos)
+    //    )
+    //);
+
+    bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.setPosition(initial_pos);
+
 
     bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.setTexture(
         bro::GetResourceManager()->Get("img/angry-boi.png")
     );
     bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->velocity_ = {100, 100};
 
-    bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->hitbox_ =
-        bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.getGlobalBounds();
+    auto bounds = bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.getGlobalBounds();
+    bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->hitbox_ = bounds;
   }
 
 private:

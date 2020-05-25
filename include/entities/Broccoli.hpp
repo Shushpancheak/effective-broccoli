@@ -32,12 +32,14 @@ public:
       )
     );
 
-    REPORT_IF_ERROR(
-      bro::RegisterEvent<SetTransformEvent>(
-        entity_id,
-        sf::Transform().translate(initial_pos)
-      )
-    );
+    //REPORT_IF_ERROR(
+    //    bro::RegisterEvent<SetTransformEvent>(
+    //        entity_id,
+    //        sf::Transform().translate(initial_pos)
+    //    )
+    //);
+
+    bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.setPosition(initial_pos);
 
     bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.setTexture(
       bro::GetResourceManager()->Get("img/effective-broccoli.png")
@@ -51,8 +53,6 @@ public:
     bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->velocity_ = {100, -100};
 
     auto bounds = bro::GetComponentUnsafe<GraphicalComponent>(entity_id)->sprite.getGlobalBounds();
-    bounds.left -= bounds.width  / 2;
-    bounds.top  -= bounds.height / 2;
     bro::GetComponentUnsafe<PhysicalComponent>(entity_id)->hitbox_ =
       bounds;
   }
