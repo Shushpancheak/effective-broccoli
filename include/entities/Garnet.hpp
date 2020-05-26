@@ -23,7 +23,7 @@ public:
 
   int32_t padding;
 
-  GarnetEntity(const EntityID entity_id, const sf::Vector2f initial_pos)
+  GarnetEntity(const EntityID entity_id, const EntityID target_id, const sf::Vector2f initial_pos)
       : Entity(entity_id) {
     REPORT_IF_ERROR(
         bro::AddComponent<TransformComponent>(entity_id, nullptr)
@@ -43,6 +43,7 @@ public:
     REPORT_IF_ERROR(
         bro::AddComponent<AiComponent>(
             entity_id,
+            target_id,
             AiType::AGGRESSIVE
         )
     );

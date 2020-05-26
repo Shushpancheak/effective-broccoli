@@ -7,6 +7,13 @@
 #include "events/physical_events.hpp"
 #include "components/AiComponent.hpp"
 #include "components/GraphicalComponent.hpp"
+#include "entities/Entity.hpp"
+#include "components/PhysicalComponent.hpp"
+
+#include "engine/core.hpp"
+
+#include "events/transform_events.hpp"
+#include "events/physical_events.hpp"
 
 class AiSystem : public System {
 public:

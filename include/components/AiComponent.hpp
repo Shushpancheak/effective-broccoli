@@ -11,13 +11,13 @@ enum class AiType {
 struct AiComponent : public Component {
   static const ComponentID type_id = COMPONENT_AI;
 
-  AiComponent(EntityID owner, AiType type);
-
+  AiComponent(EntityID owner, EntityID target, AiType type);
+  EntityID target_id;
   AiType type;
 };
 
-inline AiComponent::AiComponent(EntityID owner, AiType type)
-  : Component(owner)
+inline AiComponent::AiComponent(EntityID owner, EntityID target, AiType type)
+  : Component(owner), target_id(target)
   , type(type) {}
 
 
