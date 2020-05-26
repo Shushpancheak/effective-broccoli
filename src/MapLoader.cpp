@@ -56,14 +56,14 @@ MapLoader::MapLoader(const std::string &filename) : INITIAL_X(-1000), INITIAL_Y(
 
 
       auto bounds = bro::GetComponentUnsafe<GraphicalComponent>(current_id)->sprite.getGlobalBounds();
-      
-      bro::AddComponent<PhysicalComponent>(
-        current_id,
-        bounds,
-        1,
-        types_[map_entity_id].is_static ? PhysicalGroup::StaticObject : PhysicalGroup::DynamicObject
-      ).ThrowIfError();
-
+      if (types_[map_entity_id].is_static) {
+        bro::AddComponent<PhysicalComponent>(
+            current_id,
+            bounds,
+            1,
+            types_[map_entity_id].is_static ? PhysicalGroup::StaticObject : PhysicalGroup::DynamicObject
+        ).ThrowIfError();
+      }
       current_pos.x += types_[map_entity_id].sprite_rect.width * SCALE_FACTOR;
     }
     current_pos.y += 32 * SCALE_FACTOR;

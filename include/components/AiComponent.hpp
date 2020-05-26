@@ -9,7 +9,7 @@ enum class AiType {
 };
 
 struct AiComponent : public Component {
-  static const ComponentID type_id = COMPONENT_TRANSFORM;
+  static const ComponentID type_id = COMPONENT_AI;
 
   AiComponent(EntityID owner, AiType type);
 

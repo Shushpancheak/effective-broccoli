@@ -1,5 +1,7 @@
 #include "systems/AiSystem.hpp"
 
+const SystemID AiSystem::type_id;
+
 AiSystem::AiSystem() {
   bro::GetEventManager()->Subscribe(
     AiSystem::type_id, CollisionEvent::type_id

@@ -19,6 +19,7 @@ set (
   src/GraphicalComponent.cpp
   src/TransformComponent.cpp
   src/PhysicalComponent.cpp
+  src/AiComponent.cpp
   
   src/ResourceManager.cpp
   src/ComponentManager.cpp
@@ -45,6 +46,7 @@ set (
   include/components/GraphicalComponent.hpp
   include/components/PhysicalComponent.hpp
   include/components/TransformComponent.hpp
+  include/components/AiComponent.hpp
 
   include/systems/System.hpp
   include/systems/GraphicalSystem.hpp
