@@ -60,13 +60,15 @@ void PhysicalSystem::Update(Duration delta_time) {
     auto collided = CorrectHitbox(*component_it, dt);
     if (collided.IsOk()) {
       std::cout << "wall hit" << std::endl;
-      // bro::GetEventManager()->sendMessage<CollisionMessage>(moving_object, colided);
+//       bro::GetEventManager()->sendMessage<CollisionMessage>(moving_object, colided);
     }
     /*EventManager.sendMessage<MoveMessage>(moving_object, component.hitbox_); */
   }
 
   for (const auto &pair : dynamic_objects_.findAllIntersections()) {
-    // EventManager.sendMessage<CollisionMessage>(pair);
+    REPORT_IF_ERROR(bro::RegisterEvent<CollisionEvent>(pair.first, pair.second));
+
+    std::cout << "collided" << std::endl;
   }
 }
 

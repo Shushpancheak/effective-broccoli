@@ -1,5 +1,6 @@
 #include "support/MapLoader.hpp"
 #include "components/GraphicalComponent.hpp"
+#include "components/PhysicalComponent.hpp"
 #include "components/TransformComponent.hpp"
 #include "systems/GraphicalSystem.hpp"
 #include "events/transform_events.hpp"
@@ -20,7 +21,8 @@ MapLoader::MapLoader(const std::string &filename) : INITIAL_X(-1000), INITIAL_Y(
           sprite_pos["top"].as<int>(),
           sprite_pos["width"].as<int>(),
           sprite_pos["height"].as<int>()
-        }
+        },
+        block["phys_comp"]["is_static"].as<bool>()
       });
     }
   }
@@ -35,6 +37,7 @@ MapLoader::MapLoader(const std::string &filename) : INITIAL_X(-1000), INITIAL_Y(
         current_id,
         nullptr
       ).ThrowIfError();
+
       bro::GetComponentUnsafe<GraphicalComponent>(
         current_id
         )->sprite.setTexture(
@@ -51,6 +54,16 @@ MapLoader::MapLoader(const std::string &filename) : INITIAL_X(-1000), INITIAL_Y(
         sf::Transform().translate(current_pos)
       ).ThrowIfError();
 
+
+      auto bounds = bro::GetComponentUnsafe<GraphicalComponent>(current_id)->sprite.getGlobalBounds();
+      if (types_[map_entity_id].is_static) {
+        bro::AddComponent<PhysicalComponent>(
+            current_id,
+            bounds,
+            1,
+            types_[map_entity_id].is_static ? PhysicalGroup::StaticObject : PhysicalGroup::DynamicObject
+        ).ThrowIfError();
+      }
       current_pos.x += types_[map_entity_id].sprite_rect.width * SCALE_FACTOR;
     }
     current_pos.y += 32 * SCALE_FACTOR;

@@ -31,4 +31,16 @@ struct SetTransformEvent : public Event {
   sf::Transform trans;
 };
 
+struct ChangeSpeedEvent : public Event {
+  static const EventID type_id = EVENT_CHANGE_SPEED;
+
+  ChangeSpeedEvent(const EntityID entity_id, const sf::Vector2f& velocity)
+      : Event(type_id)
+      , entity_id(entity_id)
+      , velocity_(velocity) {}
+
+  EntityID entity_id;
+  sf::Vector2f velocity_;
+};
+
 #endif // TRANSFORM_EVENTS_HPP
