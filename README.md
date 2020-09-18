@@ -1,5 +1,5 @@
 # Effective Brocolli
-An *effective* realization of an Entity Component System game engine.
+An *effective* implementation of an Entity Component System game engine.
 
 ## Engine Structure
 This section disusses the structure of the engine by providing illustrations of classes which lay the foundation of the engine in form of UML diagrams.
